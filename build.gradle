@@ -1,0 +1,37 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+group = 'net.jiffle'
+version = '0.0.1'
+
+description = "Todo Backend example using SparkJava, Axon & Spock"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+ext {
+  axonVersion = '2.4.1'
+} 
+
+repositories {
+  jcenter()      
+  mavenCentral()
+}
+
+dependencies {
+    compile "org.springframework.boot:spring-boot-starter-web:1.2.4.RELEASE"
+    compile "org.axonframework:axon-core:${axonVersion}"
+    compile "com.jayway.jsonpath:json-path:2.0.0"
+    
+    testCompile 'org.spockframework:spock-core:1.1-groovy-2.4-rc-3'
+    testCompile "junit:junit:4.12"
+    testCompile "org.axonframework:axon-test:${axonVersion}"
+    testCompile "org.springframework:spring-test:4.1.6.RELEASE"
+    testCompile "org.mockito:mockito-all:1.10.19"
+}
