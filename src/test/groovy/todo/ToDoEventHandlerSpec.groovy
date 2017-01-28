@@ -40,7 +40,7 @@ class ToDoEventHandlerSpec extends Specification {
     def "Receiving An Updated Event Can Update A Todos Title Only"() {
         def todo = addTodoToList(TODO_ID)
 
-        def todoUpdates = new ToDoItem("do something else", null, null)
+        def todoUpdates = new ToDoItem("do something else", false, null)
         def updatedEvent = new TodoItemUpdatedEvent(TODO_ID, todoUpdates)
 
         def result = linkResultAndTodo(TODO_ID)
@@ -81,7 +81,7 @@ class ToDoEventHandlerSpec extends Specification {
         def todo = addTodoToList(TODO_ID)
         int newOrder = todo.getOrder() + 1
 
-        def todoUpdates = new ToDoItem(null, null, newOrder)
+        def todoUpdates = new ToDoItem(null, false, newOrder)
         def updatedEvent = new TodoItemUpdatedEvent(TODO_ID, todoUpdates)
 
         def result = linkResultAndTodo(TODO_ID)
