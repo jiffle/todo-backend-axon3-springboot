@@ -1,13 +1,10 @@
 package todo.domain.event;
 
+import lombok.NonNull;
+import lombok.Value;
+
+@Value
 public class ToDoItemDeletedEvent {
-    private final String todoId;
+	@NonNull private final String todoId;
 
-    public ToDoItemDeletedEvent(String todoId) {
-        this.todoId = todoId;
-    }
-
-    public String getTodoId() {
-        return todoId;
-    }
 }

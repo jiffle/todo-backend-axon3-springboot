@@ -1,31 +1,18 @@
 package todo.view;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
 import todo.domain.ToDoItem;
 
+@RequiredArgsConstructor
 public class ToDoItemView {
-    private final ToDoItem todo;
-    private final String todoUrl;
-
-    public ToDoItemView(ToDoItem todo, String todoUrl) {
-        this.todo = todo;
-        this.todoUrl = todoUrl;
-    }
-
-    public String getId() {
-        return todo.getId();
-    }
-
-    public String getTitle() {
-        return todo.getTitle();
-    }
-
-    public Boolean isCompleted() {
-        return todo.isCompleted();
-    }
+	@Delegate
+	@NonNull private final ToDoItem todo;
+	@NonNull private final String todoUrl;
 
     public String getUrl() {
         return todoUrl;
     }
 
-    public Integer getOrder() { return todo.getOrder(); }
 }

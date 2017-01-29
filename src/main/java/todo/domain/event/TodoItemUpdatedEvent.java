@@ -1,21 +1,12 @@
 package todo.domain.event;
 
+import lombok.NonNull;
+import lombok.Value;
 import todo.domain.ToDoItem;
 
+@Value
 public class TodoItemUpdatedEvent {
-    private final String todoId;
-    private final ToDoItem todoUpdates;
+	@NonNull private final String todoId;
+	@NonNull private final ToDoItem todoUpdates;
 
-    public TodoItemUpdatedEvent(String todoId, ToDoItem todoUpdates) {
-        this.todoId = todoId;
-        this.todoUpdates = todoUpdates;
-    }
-
-    public String getTodoId() {
-        return todoId;
-    }
-
-    public ToDoItem getTodoUpdates() {
-        return todoUpdates;
-    }
 }

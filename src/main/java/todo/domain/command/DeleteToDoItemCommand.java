@@ -2,11 +2,12 @@ package todo.domain.command;
 
 import org.axonframework.commandhandling.annotation.TargetAggregateIdentifier;
 
+import lombok.NonNull;
+import lombok.Value;
+
+@Value
 public class DeleteToDoItemCommand {
     @TargetAggregateIdentifier
-    private final String todoId;
+    @NonNull private final String todoId;
 
-    public DeleteToDoItemCommand(String todoId) {
-        this.todoId = todoId;
-    }
 }

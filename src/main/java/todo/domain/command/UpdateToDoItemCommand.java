@@ -1,20 +1,16 @@
 package todo.domain.command;
 
 import org.axonframework.commandhandling.annotation.TargetAggregateIdentifier;
+
+import lombok.NonNull;
+import lombok.Value;
 import todo.domain.ToDoItem;
 
+@Value
 public class UpdateToDoItemCommand {
 
     @TargetAggregateIdentifier
-    private final String todoId;
-    private final ToDoItem todoUpdates;
+    @NonNull private final String todoId;
+    @NonNull private final ToDoItem todoUpdates;
 
-    public UpdateToDoItemCommand(String todoId, ToDoItem todoUpdates) {
-        this.todoId = todoId;
-        this.todoUpdates = todoUpdates;
-    }
-
-    public ToDoItem getTodoUpdates() {
-        return todoUpdates;
-    }
 }

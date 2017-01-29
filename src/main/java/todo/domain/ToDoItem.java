@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
+import lombok.NonNull;
 
 @Data
 public class ToDoItem {
-    private String id;
-    private String title;
-    private boolean completed;
-    private Integer order;
+	private String id;
+	@NonNull private String title;
+	private boolean completed;
+	@NonNull private Integer order;
 
     @JsonCreator
     public ToDoItem(@JsonProperty("title") String title,

@@ -4,6 +4,8 @@ import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
+
+import lombok.NonNull;
 import todo.ToDoEventHandler;
 import todo.persistance.TodoList;
 import todo.domain.command.CreateToDoItemCommand;
@@ -28,7 +30,7 @@ public class ToDoController {
     private final ToDoItemViewFactory toDoItemViewFactory;
 
     @Autowired
-    public ToDoController(CommandGateway commandGateway, TodoList list, ToDoEventHandler eventHandler, ToDoItemViewFactory toDoItemViewFactory) {
+    public ToDoController(@NonNull CommandGateway commandGateway, @NonNull TodoList list, @NonNull ToDoEventHandler eventHandler, @NonNull ToDoItemViewFactory toDoItemViewFactory) {
         this.commandGateway = commandGateway;
         this.list = list;
         this.eventHandler = eventHandler;

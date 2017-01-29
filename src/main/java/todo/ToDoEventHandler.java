@@ -4,6 +4,8 @@ import org.axonframework.eventhandling.annotation.EventHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.async.DeferredResult;
+
+import lombok.NonNull;
 import todo.persistance.TodoList;
 import todo.domain.ToDoItem;
 import todo.domain.event.ToDoItemCreatedEvent;
@@ -23,7 +25,7 @@ public class ToDoEventHandler {
     private Map<String, DeferredResult<ToDoItemView>> httpResults;
 
     @Autowired
-    public ToDoEventHandler(TodoList todos, ToDoItemViewFactory toDoItemViewFactory) {
+    public ToDoEventHandler(@NonNull TodoList todos, @NonNull ToDoItemViewFactory toDoItemViewFactory) {
         this.todos = todos;
         this.toDoItemViewFactory = toDoItemViewFactory;
         this.httpResults = new HashMap<String, DeferredResult<ToDoItemView>>();
