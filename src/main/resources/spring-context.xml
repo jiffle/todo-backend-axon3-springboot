@@ -8,7 +8,7 @@
 
     <context:annotation-config />
 
-    <axon:command-bus id="commandBus"/>
+<!--     <axon:command-bus id="commandBus"/>
     <axon:event-bus id="eventBus"/>
 
     <axon:event-sourcing-repository id="toDoRepository"
@@ -26,4 +26,5 @@
     <bean class="org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean">
         <property name="commandBus" ref="commandBus"/>
     </bean>
+-->
 </beans>

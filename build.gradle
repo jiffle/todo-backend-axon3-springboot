@@ -1,3 +1,7 @@
+plugins {
+	id 'org.springframework.boot' version '1.5.1.RELEASE'
+}
+
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
@@ -16,7 +20,8 @@ tasks.withType(JavaCompile) {
 }
 
 ext {
-  axonVersion = '2.4.6'
+  axonVersion = '3.0.1'
+  springbootVersion = '1.5.1.RELEASE'
 } 
 
 repositories {
@@ -25,11 +30,12 @@ repositories {
 }
 
 dependencies {
-    compile "org.springframework.boot:spring-boot-starter-web:1.2.4.RELEASE"
+	compile "org.springframework.boot:spring-boot-starter-web:${springbootVersion}"
     compile "org.axonframework:axon-core:${axonVersion}"
+    compile "org.axonframework:axon-spring-boot-autoconfigure:${axonVersion}"
     compile "com.jayway.jsonpath:json-path:2.0.0"
 	compile "org.projectlombok:lombok:1.16.12"
-// workaround for "cannot access javax.persistence.MappedSuperclass" error
+// workaround for Lombok "cannot access javax.persistence.MappedSuperclass" error
 	compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
     
     testCompile 'org.spockframework:spock-core:1.1-groovy-2.4-rc-3'

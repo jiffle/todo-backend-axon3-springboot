@@ -1,12 +1,13 @@
 package todo.persistance;
 
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import todo.domain.ToDoItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Repository
 public class TodoList {
     private List<ToDoItem> todos;
 

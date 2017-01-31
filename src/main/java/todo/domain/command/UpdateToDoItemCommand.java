@@ -1,6 +1,6 @@
 package todo.domain.command;
 
-import org.axonframework.commandhandling.annotation.TargetAggregateIdentifier;
+import org.axonframework.commandhandling.TargetAggregateIdentifier;
 
 import lombok.NonNull;
 import lombok.Value;

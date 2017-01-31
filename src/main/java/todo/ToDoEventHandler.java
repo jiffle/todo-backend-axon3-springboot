@@ -1,6 +1,6 @@
 package todo;
 
-import org.axonframework.eventhandling.annotation.EventHandler;
+import org.axonframework.eventhandling.EventHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.async.DeferredResult;
@@ -17,7 +17,8 @@ import todo.view.ToDoItemViewFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
+//@Service
+@Deprecated
 public class ToDoEventHandler {
 
     private final TodoList todos;
