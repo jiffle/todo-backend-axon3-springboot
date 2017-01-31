@@ -4,13 +4,13 @@ import org.axonframework.commandhandling.TargetAggregateIdentifier;
 
 import lombok.NonNull;
 import lombok.Value;
-import todo.domain.ToDoItem;
+import todo.view.ToDoItemView;
 
 @Value
 public class CreateToDoItemCommand {
 
     @TargetAggregateIdentifier
     @NonNull private final String todoId;
-    @NonNull private final ToDoItem todo;
+    @NonNull private final ToDoItemView todo;
 
 }

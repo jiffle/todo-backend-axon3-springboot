@@ -10,7 +10,6 @@ import todo.ToDoEventHandler;
 import todo.persistance.TodoList;
 import todo.domain.command.CreateToDoItemCommand;
 import todo.domain.command.DeleteToDoItemCommand;
-import todo.domain.ToDoItem;
 import todo.domain.command.UpdateToDoItemCommand;
 import todo.view.ToDoItemView;
 import todo.view.ToDoItemViewFactory;
@@ -18,6 +17,7 @@ import todo.view.ToDoItemViewFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/todos")
@@ -39,21 +39,16 @@ public class ToDoController {
 
     @RequestMapping(method = RequestMethod.GET)
     public List<ToDoItemView> index() {
-        List<ToDoItemView> todoViews = new ArrayList<ToDoItemView>();
-        for (ToDoItem todo : list.all()) {
-            todoViews.add(toDoItemViewFactory.build(todo));
-        }
-
-        return todoViews;
+        return toDoItemViewFactory.buildList( list.all());
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public DeferredResult<ToDoItemView> create(@RequestBody ToDoItem todo) {
+    public DeferredResult<ToDoItemView> create(@RequestBody ToDoItemView todo) {
         DeferredResult<ToDoItemView> result = new DeferredResult<ToDoItemView>();
         String id = UUID.randomUUID().toString();
 
         todo.setCompleted(false);
-
+        todo.setId( id);
         eventHandler.linkResultWithEvent(id, result);
         commandGateway.send(new CreateToDoItemCommand(id, todo));
 
@@ -68,11 +63,11 @@ public class ToDoController {
 
     @RequestMapping(value = TODO_URL, method = RequestMethod.GET)
     public ToDoItemView show(@PathVariable String id) {
-        return toDoItemViewFactory.build(list.get(id));
+        return toDoItemViewFactory.buildItem( list.get( id));
     }
 
     @RequestMapping(value = TODO_URL, method = RequestMethod.PATCH)
-    public DeferredResult<ToDoItemView> update(@PathVariable String id, @RequestBody ToDoItem todoUpdates) {
+    public DeferredResult<ToDoItemView> update(@PathVariable String id, @RequestBody ToDoItemView todoUpdates) {
         DeferredResult<ToDoItemView> result = new DeferredResult<ToDoItemView>();
 
         eventHandler.linkResultWithEvent(id, result);

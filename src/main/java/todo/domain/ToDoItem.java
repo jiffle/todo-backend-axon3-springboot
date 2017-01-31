@@ -18,13 +18,4 @@ public class ToDoItem {
 	private boolean completed;
 	@NonNull private Integer order;
 
-/*    @JsonCreator
-    public ToDoItem(@JsonProperty("title") String title,
-                    @JsonProperty("completed") boolean completed,
-                    @JsonProperty("order") Integer order) {
-        this.title = title;
-        this.completed = completed;
-        this.order = order;
-    }
-*/        
 }
