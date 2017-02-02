@@ -8,21 +8,21 @@ import todo.domain.command.*
 import todo.domain.event.*
 
 
-public class ToDoItemAggregateSpec extends Specification {
+public class TodoListAggregateSpec extends Specification {
     def fixture
     def todo
 
     def setup() {
-        fixture = new AggregateTestFixture(ToDoItemAggregate.class)
-        todo = new ToDoItem("do something", false, 2)
+        fixture = new AggregateTestFixture(TodoListAggregate.class)
+        todo = ToDoItem.builder().id("").title("do something").order( 2).build();
     }
 
     def "Creating Todo Items Emits Created Events"() {
         def test = fixture.given()
 		when:
-			def validator = test.when(new CreateToDoItemCommand("1", todo))
+			def validator = test.when( new CreateToDoItemCommand("1", todo))
 		then:
-            validator.expectEvents(new ToDoItemCreatedEvent("1", todo))
+            validator.expectEvents( new ToDoItemCreatedEvent("1", todo))
 
     }
 

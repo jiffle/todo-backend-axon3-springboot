@@ -31,13 +31,17 @@ repositories {
 
 dependencies {
 	compile "org.springframework.boot:spring-boot-starter-web:${springbootVersion}"
+	compile "org.springframework.boot:spring-boot-starter-actuator:${springbootVersion}"
     compile "org.axonframework:axon-core:${axonVersion}"
+    compile "org.axonframework:axon-spring:${axonVersion}"
     compile "org.axonframework:axon-spring-boot-autoconfigure:${axonVersion}"
     compile "com.jayway.jsonpath:json-path:2.0.0"
 	compile "org.projectlombok:lombok:1.16.12"
 // workaround for Lombok "cannot access javax.persistence.MappedSuperclass" error
 	compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
     
+	testCompile "org.codehaus.groovy:groovy-all:2.4.8"
+	testCompile "org.springframework.boot:spring-boot-starter-test:${springbootVersion}"
     testCompile 'org.spockframework:spock-core:1.1-groovy-2.4-rc-3'
     testCompile "junit:junit:4.12"
     testCompile "org.axonframework:axon-test:${axonVersion}"

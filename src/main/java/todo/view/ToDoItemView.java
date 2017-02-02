@@ -1,30 +1,21 @@
 package todo.view;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Delegate;
+import lombok.NoArgsConstructor;
 import todo.domain.ToDoItem;
 
 @Data
+@Builder( builderClassName="Builder")
+@NoArgsConstructor
+@AllArgsConstructor
 public class ToDoItemView {
 	private String id;
 	private String title;
 	private Boolean completed;
 	private Integer order;
 	private String url;
-
-	public ToDoItemView(ToDoItem item) {
-		this( item, null);
-	}
-
-	public ToDoItemView(ToDoItem item, String urlFor) {
-		this.id = item.getId();
-		this.title = item.getTitle();
-		this.completed = item.isCompleted();
-		this.order = item.getOrder();
-		this.url = urlFor;
-	}
 	
     /*    @JsonCreator
     public ToDoItem(@JsonProperty("title") String title,
@@ -35,5 +26,14 @@ public class ToDoItemView {
         this.order = order;
     }
 */        
-    
+
+	public static class Builder {
+		public Builder todoItem( ToDoItem item) {
+			this.id = item.getId();
+			this.title = item.getTitle();
+			this.completed = item.isCompleted();
+			this.order = item.getOrder();
+			return this;
+		}
+	}
 }

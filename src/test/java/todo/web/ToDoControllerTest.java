@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -17,7 +18,10 @@ import todo.domain.ToDoItem;
 import todo.domain.command.CreateToDoItemCommand;
 import todo.domain.command.DeleteToDoItemCommand;
 import todo.domain.command.UpdateToDoItemCommand;
+import todo.middleware.CompletionTracker;
 import todo.persistance.TodoList;
+import todo.query.TodoQueryService;
+import todo.view.ToDoItemView;
 import todo.view.ToDoItemViewFactory;
 
 import java.util.Arrays;
@@ -36,34 +40,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration("classpath:spring-context.xml")
 public class ToDoControllerTest {
     private MockMvc mockMvc;
-
     @Mock
     private CommandGateway commandGateway;
-
     @Mock
-    private TodoList todoList;
-
+    private TodoQueryService queryService;
     @Mock
-    private ToDoEventHandler eventHandler;
+    private CompletionTracker completionTracker;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
 
-        ToDoItemViewFactory toDoItemViewFactory = new ToDoItemViewFactory("http://test.host/todos");
-        ToDoController toDoController = new ToDoController(commandGateway, todoList, eventHandler, toDoItemViewFactory);
+        ToDoItemViewFactory viewFactory = new ToDoItemViewFactory("http://test.host/todos");
+        ToDoController toDoController = new ToDoController(commandGateway, queryService, viewFactory, completionTracker);
 
         mockMvc = MockMvcBuilders.standaloneSetup(toDoController).build();
     }
 
     @Test
     public void index_rendersViewOfAllTodos() throws Exception {
-        ToDoItem todo1 = new ToDoItem("do something", false, 1);
-        todo1.setId("123abc");
-        ToDoItem todo2 = new ToDoItem("do something else", false, 2);
-        todo2.setId("456def");
+        ToDoItem todo1 = ToDoItem.builder().id("123abc").title( "do something").order( 1).build();
+        ToDoItem todo2 = ToDoItem.builder().id("456def").title( "do something else").order( 2).build();
 
-        when(todoList.all()).thenReturn(Arrays.asList(todo1, todo2));
+        when( queryService.queryListForUser( any())).thenReturn(Arrays.asList(todo1, todo2));
 
         mockMvc.perform(get("/todos"))
                 .andExpect(status().isOk())
@@ -77,7 +76,7 @@ public class ToDoControllerTest {
 
     @Test
     public void create_issuesACommandToCreateATodo() throws Exception {
-        ToDoItem todo = new ToDoItem("do something", false, 1);
+        ToDoItem todo = ToDoItem.builder().title("do something").order( 1).build();
 
         ObjectMapper objectMapper = new ObjectMapper();
         String todoJson = objectMapper.writeValueAsString(todo);
@@ -91,18 +90,19 @@ public class ToDoControllerTest {
         verify(commandGateway).send(commandCaptor.capture());
 
         CreateToDoItemCommand command = commandCaptor.getValue();
-        assertThat(command.getTodoId(), is(not(nullValue())));
-        assertThat(command.getTodo().getTitle(), is("do something"));
-        assertThat(command.getTodo().getOrder(), is(1));
-        assertThat(command.getTodo().isCompleted(), is(false));
+        assertThat(command.getUserId(), is("1"));
+        assertThat(command.getItemId(), is(not(nullValue())));
+        assertThat(command.getTitle(), is("do something"));
+        assertThat(command.getOrder(), is(1));
+        assertThat(command.isCompleted(), is(false));
+        assertThat(command.getTrackerId(), is(not(nullValue())));
     }
 
     @Test
     public void show_rendersViewOfASingleTodo() throws Exception {
-        ToDoItem todo = new ToDoItem("do something", true, 2);
-        todo.setId("123abc");
+        ToDoItem todo = ToDoItem.builder().id("123abc").title("do something").completed(true).order( 2).build();
 
-        when(todoList.get("123abc")).thenReturn(todo);
+        when( queryService.queryListForItem( "1", "123abc")).thenReturn(todo);
 
         mockMvc.perform(get("/todos/{id}", "123abc"))
                 .andExpect(status().isOk())
@@ -126,7 +126,7 @@ public class ToDoControllerTest {
         verify(commandGateway).send(commandCaptor.capture());
 
         UpdateToDoItemCommand command = commandCaptor.getValue();
-        assertThat(command.getTodoUpdates().isCompleted(), is(true));
+        assertThat(command.getCompleted(), is(true));
     }
 
     @Test

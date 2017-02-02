@@ -1,48 +1,47 @@
 package todo.domain;
 
-import static org.axonframework.commandhandling.model.AggregateLifecycle.apply;
+import static java.util.Optional.ofNullable;
 
 import org.axonframework.commandhandling.CommandHandler;
-import org.axonframework.eventhandling.EventBus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import todo.domain.command.ClearTodoListCommand;
 import todo.domain.command.CreateToDoItemCommand;
 import todo.domain.command.DeleteToDoItemCommand;
 import todo.domain.command.UpdateToDoItemCommand;
-import todo.domain.event.ToDoItemCreatedEvent;
-import todo.domain.event.ToDoItemDeletedEvent;
-import todo.domain.event.TodoItemUpdatedEvent;
-import todo.persistance.TodoList;
+import todo.repo.TodoListRepository;
 
 @Component
 public class TodoItemCommandHandler {
-	    private TodoList repository;
-	    private EventBus eventBus;
-
-	    @Autowired
-	    public TodoItemCommandHandler( TodoList repository, EventBus eventBus) {
-	        this.repository = repository;
-	        this.eventBus = eventBus;
-	    }
-	    
-	    @CommandHandler
-	    public void create(CreateToDoItemCommand command) {
-	    	
-	        apply(new ToDoItemCreatedEvent( command.getTodoId(), command.getTodo().getTitle(), command.getTodo().isCompleted(), command.getTodo().getOrder()));
-	        
-	        repository.add( new ToDoItem( command.getTodoId(), command.getTodo().));
-	        
-	    }
-
-	    @CommandHandler
-	    public void update(UpdateToDoItemCommand command) {
-	        apply(new TodoItemUpdatedEvent( command.getTodoId(), command.getTodoUpdates()));
-	    }
-
-	    @CommandHandler
-	    public void delete(DeleteToDoItemCommand command) {
-	        apply(new ToDoItemDeletedEvent( command.getTodoId()));
-	    }
-
+	private TodoListRepository repository;
+	
+	@Autowired
+	public TodoItemCommandHandler( TodoListRepository repository) {
+	    this.repository = repository;
+	}
+	
+	@CommandHandler
+	public void create( CreateToDoItemCommand cmd) {	  
+		TodoListAggregate todoListAggregate = repository.loadOrCreateInstance( cmd.getUserId());
+		todoListAggregate.addItem( cmd.getItemId(), cmd.getTitle(), cmd.isCompleted(), cmd.getOrder(), cmd.getTrackerId());
+	}
+	
+	@CommandHandler
+	public void update( UpdateToDoItemCommand cmd) {
+		TodoListAggregate todoListAggregate = repository.loadOrCreateInstance( cmd.getUserId());
+		todoListAggregate.updateItem( cmd.getItemId(), ofNullable( cmd.getTitle()), ofNullable( cmd.getCompleted()), ofNullable( cmd.getOrder()), cmd.getTrackerId());
+	}
+	
+	@CommandHandler
+	public void delete( DeleteToDoItemCommand cmd) {
+		TodoListAggregate todoListAggregate = repository.loadOrCreateInstance( cmd.getUserId());
+		todoListAggregate.deleteItem( cmd.getItemId(), cmd.getTrackerId());	    	
+	}
+	
+	@CommandHandler
+	public void clear( ClearTodoListCommand cmd) {
+		TodoListAggregate todoListAggregate = repository.loadOrCreateInstance( cmd.getUserId());
+		todoListAggregate.clear( cmd.getTrackerId());	    	
+	}
 }

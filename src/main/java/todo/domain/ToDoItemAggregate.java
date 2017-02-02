@@ -18,7 +18,7 @@ import static org.axonframework.commandhandling.model.AggregateLifecycle.apply;
 //@AggregateRoot
 //@Component
 @Deprecated
-public class ToDoItemAggregate {
+public class ToDoItemAggregate {} /* {
     @AggregateIdentifier
     private String id;
 
@@ -45,3 +45,4 @@ public class ToDoItemAggregate {
         this.id = event.getTodoId();
     }
 }
+*/

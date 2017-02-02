@@ -19,7 +19,7 @@ import java.util.Map;
 
 //@Service
 @Deprecated
-public class ToDoEventHandler {
+public class ToDoEventHandler {} /*{
 
     private final TodoList todos;
     private final ToDoItemViewFactory toDoItemViewFactory;
@@ -83,3 +83,4 @@ public class ToDoEventHandler {
         httpResults.remove(todo.getId());
     }
 }
+*/

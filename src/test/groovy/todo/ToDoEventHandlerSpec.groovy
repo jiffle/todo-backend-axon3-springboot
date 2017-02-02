@@ -21,7 +21,7 @@ class ToDoEventHandlerSpec extends Specification {
     }
 
     def "Receiving A Created Event Adds A Todo"() {
-        def createTodo = new ToDoItem("do something", false, 10)
+        def createTodo = ToDoItem.builder().title("do something").order( 10).build()
         def createdEvent = new ToDoItemCreatedEvent(TODO_ID, createTodo)
 
         def result = linkResultAndTodo(TODO_ID)
