@@ -7,9 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-public class TodoApp {
+public class TodoApplication {
     public static void main(String args[]) throws Exception {
-        SpringApplication.run(TodoApp.class, args);
+        SpringApplication.run(TodoApplication.class, args);
     }
     
     @Bean

@@ -8,9 +8,13 @@ import lombok.NonNull;
 import lombok.Value;
 
 @Value
-public class DeleteToDoItemCommand {
+public class UpdateTodoItemCommand {
+
     @TargetAggregateIdentifier
     @NonNull private final String userId;
     @NonNull private final String itemId;
+	private String title;
+	private Boolean completed;
+	private Integer order;
 	private Optional<String> trackerId;
 }

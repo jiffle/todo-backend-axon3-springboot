@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.springframework.stereotype.Service;
 
-import todo.domain.ToDoItem;
+import todo.domain.TodoItem;
 import todo.repo.TodoListRepository;
 
 @Service
@@ -15,11 +15,11 @@ private final TodoListRepository repository;
 		this.repository = repository;
 	}
 	
-	public Collection<ToDoItem> queryListForUser( String userId) {		
+	public Collection<TodoItem> queryListForUser(String userId) {
 		return repository.loadOrCreateInstance( userId).allValues();
 	}
 
-	public ToDoItem queryListForItem( String userId, String itemId) {
+	public TodoItem queryListForItem(String userId, String itemId) {
 		return repository.load( userId).getValue( itemId);
 	}
 

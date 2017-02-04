@@ -6,7 +6,7 @@ import lombok.NonNull;
 
 @Data
 @Builder( builderClassName="Builder")
-public class ToDoItem {
+public class TodoItem {
 	@NonNull private String id;
 	@NonNull private String title;
 	private boolean completed;

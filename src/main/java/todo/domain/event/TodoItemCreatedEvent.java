@@ -8,7 +8,7 @@ import lombok.Value;
 
 @Value
 @RequiredArgsConstructor
-public class ToDoItemCreatedEvent {
+public class TodoItemCreatedEvent {
 	@NonNull private final String itemId;
 	@NonNull private String title;
 	@NonNull private Boolean completed;

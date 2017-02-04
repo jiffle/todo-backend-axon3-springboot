@@ -85,6 +85,7 @@ dependencies {
 }
 
 task functionalTest(type: Test, dependsOn: jar) {
+	shouldRunAfter test
     group 'Verification'
     description 'Runs the functional tests.'
 	testClassesDir = sourceSets.functionalTest.output.classesDir

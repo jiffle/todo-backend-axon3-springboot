@@ -8,34 +8,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import todo.domain.ToDoItem;
+import todo.domain.TodoItem;
 import todo.helper.ResourceNotFoundException;
-import todo.web.ToDoController;
+import todo.web.TodoController;
 
 @Component
-public class ToDoItemViewFactory {
+public class TodoItemViewFactory {
     private String apiRoot;
 
     @Autowired
-    public ToDoItemViewFactory(@Value("${api.root}") String apiRoot) {
+    public TodoItemViewFactory(@Value("${api.root}") String apiRoot) {
         this.apiRoot = apiRoot;
     }
 
     private String todoUrlFor(String id) {
-        return apiRoot + ToDoController.TODO_URL.replace("{id}", id);
+        return apiRoot + TodoController.TODO_URL.replace("{id}", id);
     }
     
-    public ToDoItemView buildItem( ToDoItem item) {
+    public TodoItemView buildItem(TodoItem item) {
     	if( item == null) {
     		throw new ResourceNotFoundException( "Todo Item was not found");
     	}
-    	return new ToDoItemView.Builder()
+    	return new TodoItemView.Builder()
     			.todoItem(item)
     			.url( todoUrlFor( item.getId()))
     			.build();
     }
     
-    public List< ToDoItemView> buildList( Collection< ToDoItem> list) {
+    public List<TodoItemView> buildList(Collection<TodoItem> list) {
     	return list.stream().map( this:: buildItem).collect( Collectors.toList());
     }
 }

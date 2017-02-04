@@ -1,15 +1,11 @@
 package todo
 
-import org.apache.commons.collections.Bag
-import org.junit.runner.RunWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
 
 import spock.lang.*
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.RESTClient
-
-import todo.TodoApp
 
 import static groovyx.net.http.ContentType.JSON
 import static org.hamcrest.Matchers.*
@@ -18,10 +14,10 @@ import static spock.util.matcher.HamcrestSupport.that
 //@ContextConfiguration
 
 //@RunWith( SpringRunner.class)
-//@ContextConfiguration(loader = SpringApplicationContextLoader, classes = TodoApp)
+//@ContextConfiguration(loader = SpringApplicationContextLoader, classes = TodoApplication)
 //@WebIntegrationTest
-//@ContextConfiguration(loader = SpringApplicationContextLoader.class, classes = [ TodoApp.class])
-@ContextConfiguration( classes = [ TodoApp.class])
+//@ContextConfiguration(loader = SpringApplicationContextLoader.class, classes = [ TodoApplication.class])
+@ContextConfiguration( classes = [ TodoApplication.class])
 @SpringBootTest( webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Stepwise
 class TodoAPISpec extends Specification {

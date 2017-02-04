@@ -1,4 +1,4 @@
-package todo.middleware;
+package todo.web;
 
 import org.springframework.stereotype.Component;
 

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import todo.domain.ToDoItem;
+import todo.domain.TodoItem;
 
 /** Tracks aggregate updates that need to be rendered as responses
  */
@@ -17,8 +17,8 @@ import todo.domain.ToDoItem;
 @Slf4j
 @Getter
 public class CompletionTracker {
-	private CompletableStatus< ToDoItem> itemTracker = new CompletableStatus<>();
-	private CompletableStatus< Collection<ToDoItem>> listTracker = new CompletableStatus<>();
+	private CompletableStatus<TodoItem> itemTracker = new CompletableStatus<>();
+	private CompletableStatus< Collection<TodoItem>> listTracker = new CompletableStatus<>();
 		
 	public class CompletableStatus<T> {
 		private Map<String, CompletableFuture<T>> trackers = new HashMap<>();

@@ -24,32 +24,32 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import todo.domain.ToDoItem;
+import todo.domain.TodoItem;
 import todo.domain.command.ClearTodoListCommand;
-import todo.domain.command.CreateToDoItemCommand;
-import todo.domain.command.DeleteToDoItemCommand;
-import todo.domain.command.UpdateToDoItemCommand;
+import todo.domain.command.CreateTodoItemCommand;
+import todo.domain.command.DeleteTodoItemCommand;
+import todo.domain.command.UpdateTodoItemCommand;
 import todo.middleware.CompletionTracker;
 import todo.query.TodoQueryService;
-import todo.view.ToDoItemView;
-import todo.view.ToDoItemViewFactory;
+import todo.view.TodoItemView;
+import todo.view.TodoItemViewFactory;
 
 import javax.validation.Valid;
 
 @Slf4j
 @RestController
 @RequestMapping("/todos")
-public class ToDoController {
+public class TodoController {
     public static final String TODO_URL = "/{id}";
     private static final String USER_ID = "1";
     
     private final CommandGateway commandGateway;
     private final TodoQueryService queryService;
-    private final ToDoItemViewFactory viewFactory;
+    private final TodoItemViewFactory viewFactory;
     private final CompletionTracker completionTracker;
 
     @Autowired
-    public ToDoController(@NonNull CommandGateway commandGateway, @NonNull TodoQueryService queryService, @NonNull ToDoItemViewFactory toDoItemViewFactory, CompletionTracker completionTracker) {
+    public TodoController(@NonNull CommandGateway commandGateway, @NonNull TodoQueryService queryService, @NonNull TodoItemViewFactory toDoItemViewFactory, CompletionTracker completionTracker) {
 		this.commandGateway = commandGateway;
         this.queryService = queryService;
         this.viewFactory = toDoItemViewFactory;
@@ -57,25 +57,25 @@ public class ToDoController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<ToDoItemView> index() {
+    public List<TodoItemView> index() {
         return viewFactory.buildList( queryService.queryListForUser( USER_ID));
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<ToDoItemView> create(@RequestBody @Valid ToDoItemView todo) throws Throwable {
+    public ResponseEntity<TodoItemView> create(@RequestBody @Valid TodoItemView todo) throws Throwable {
         String itemId = UUID.randomUUID().toString();
 
         todo.setCompleted(false);
         todo.setId( itemId);
         
         String trackerId = UUID.randomUUID().toString();
-        CompletableFuture<ToDoItem> future = new CompletableFuture<ToDoItem>();
+        CompletableFuture<TodoItem> future = new CompletableFuture<TodoItem>();
         completionTracker.getItemTracker().addTracker(trackerId, future);
         try {
-        	commandGateway.sendAndWait( new CreateToDoItemCommand( USER_ID, itemId, todo.getTitle(), todo.getCompleted(), todo.getOrder(), of( trackerId)),
+        	commandGateway.sendAndWait( new CreateTodoItemCommand( USER_ID, itemId, todo.getTitle(), todo.getCompleted(), todo.getOrder(), of( trackerId)),
         			1, TimeUnit.SECONDS);
-			ToDoItem item = future.get(1, TimeUnit.SECONDS);
-			ToDoItemView result = viewFactory.buildItem( item);
+			TodoItem item = future.get(1, TimeUnit.SECONDS);
+			TodoItemView result = viewFactory.buildItem( item);
 	        return new ResponseEntity<>( result, HttpStatus.CREATED);
 		} catch (CommandExecutionException e) {
 			if( e.getCause() != null) {
@@ -85,40 +85,41 @@ public class ToDoController {
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
 			log.error( "Could not retrieve response to render output", e);
 		}
-        return new ResponseEntity<ToDoItemView>( HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<TodoItemView>( HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @RequestMapping(method = RequestMethod.DELETE)
-    public ResponseEntity<Collection<ToDoItemView>> clear() {
+    public ResponseEntity<Collection<TodoItemView>> clear() {
         String trackerId = UUID.randomUUID().toString();
-        CompletableFuture<Collection<ToDoItem>> future = new CompletableFuture<Collection<ToDoItem>>();
+        CompletableFuture<Collection<TodoItem>> future = new CompletableFuture<Collection<TodoItem>>();
         completionTracker.getListTracker().addTracker(trackerId, future);
         commandGateway.send( new ClearTodoListCommand( USER_ID, of( trackerId)));        
         try {
-        	Collection<ToDoItem> items = future.get(1, TimeUnit.SECONDS);
-			List<ToDoItemView> result = viewFactory.buildList( items);
+        	Collection<TodoItem> items = future.get(1, TimeUnit.SECONDS);
+			List<TodoItemView> result = viewFactory.buildList( items);
 	        return new ResponseEntity<>( result, HttpStatus.OK);
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
 			log.error( "Could not retrieve response to render output", e);
-			return new ResponseEntity<Collection<ToDoItemView>>( HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<Collection<TodoItemView>>( HttpStatus.INTERNAL_SERVER_ERROR);
 		}
     }
 
     @RequestMapping(value = TODO_URL, method = RequestMethod.GET)
-    public @ResponseBody ToDoItemView show(@PathVariable String id) {
+    public @ResponseBody
+    TodoItemView show(@PathVariable String id) {
         return viewFactory.buildItem( queryService.queryListForItem(USER_ID, id));
     }
 
     @RequestMapping(value = TODO_URL, method = RequestMethod.PATCH)
-    public ResponseEntity<ToDoItemView> update(@PathVariable String id, @RequestBody ToDoItemView todo) throws Throwable {        
+    public ResponseEntity<TodoItemView> update(@PathVariable String id, @RequestBody TodoItemView todo) throws Throwable {
         String trackerId = UUID.randomUUID().toString();
-        CompletableFuture<ToDoItem> future = new CompletableFuture<ToDoItem>();
+        CompletableFuture<TodoItem> future = new CompletableFuture<TodoItem>();
         completionTracker.getItemTracker().addTracker(trackerId, future);
         try {
-        	commandGateway.sendAndWait( new UpdateToDoItemCommand( USER_ID, id, todo.getTitle(), todo.getCompleted(), todo.getOrder(), of( trackerId)),
+        	commandGateway.sendAndWait( new UpdateTodoItemCommand( USER_ID, id, todo.getTitle(), todo.getCompleted(), todo.getOrder(), of( trackerId)),
         			1, TimeUnit.SECONDS);
-			ToDoItem item = future.get(1, TimeUnit.SECONDS);
-			ToDoItemView result = viewFactory.buildItem( item);
+			TodoItem item = future.get(1, TimeUnit.SECONDS);
+			TodoItemView result = viewFactory.buildItem( item);
 	        return new ResponseEntity<>( result, HttpStatus.OK);
 		} catch (CommandExecutionException e) {
 			if( e.getCause() != null) {
@@ -128,18 +129,18 @@ public class ToDoController {
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
 			log.error( "Could not retrieve response to render output", e);
 		}
-        return new ResponseEntity<ToDoItemView>( HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<TodoItemView>( HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @RequestMapping(value = TODO_URL, method = RequestMethod.DELETE)
     public ResponseEntity<String> delete(@PathVariable String id) throws Throwable {
         String trackerId = UUID.randomUUID().toString();
-        CompletableFuture<ToDoItem> future = new CompletableFuture<ToDoItem>();
+        CompletableFuture<TodoItem> future = new CompletableFuture<TodoItem>();
         completionTracker.getItemTracker().addTracker(trackerId, future);
         try {
-        	commandGateway.sendAndWait( new DeleteToDoItemCommand( USER_ID, id, of( trackerId)),
+        	commandGateway.sendAndWait( new DeleteTodoItemCommand( USER_ID, id, of( trackerId)),
         			1, TimeUnit.SECONDS);
-			ToDoItem item = future.get(1, TimeUnit.SECONDS);
+			TodoItem item = future.get(1, TimeUnit.SECONDS);
 	        return new ResponseEntity<>( "{}", HttpStatus.OK);
 		} catch (CommandExecutionException e) {
 			if( e.getCause() != null) {

@@ -9,7 +9,7 @@ import lombok.NonNull;
 import lombok.Value;
 
 @Value
-public class CreateToDoItemCommand {
+public class CreateTodoItemCommand {
 
     @TargetAggregateIdentifier
     @NonNull private final String userId;

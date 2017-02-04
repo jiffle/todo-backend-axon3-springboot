@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import lombok.NonNull;
 import lombok.Value;
-import todo.domain.ToDoItem;
 
 /** Update done as a single event to allow consistent state to be reported.
  * Ideally each property would have an individual event

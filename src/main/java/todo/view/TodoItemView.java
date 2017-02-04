@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import todo.domain.ToDoItem;
+import todo.domain.TodoItem;
 
 import javax.validation.constraints.NotNull;
 
@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @Builder( builderClassName="Builder")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ToDoItemView {
+public class TodoItemView {
 	private String id;
 @NotNull private String title;
 	private Boolean completed;
@@ -20,7 +20,7 @@ public class ToDoItemView {
 	private String url;
 	
     /*    @JsonCreator
-    public ToDoItem(@JsonProperty("title") String title,
+    public TodoItem(@JsonProperty("title") String title,
                     @JsonProperty("completed") boolean completed,
                     @JsonProperty("order") Integer order) {
         this.title = title;
@@ -30,7 +30,7 @@ public class ToDoItemView {
 */        
 
 	public static class Builder {
-		public Builder todoItem( ToDoItem item) {
+		public Builder todoItem( TodoItem item) {
 			this.id = item.getId();
 			this.title = item.getTitle();
 			this.completed = item.isCompleted();

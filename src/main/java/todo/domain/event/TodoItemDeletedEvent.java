@@ -6,6 +6,7 @@ import lombok.NonNull;
 import lombok.Value;
 
 @Value
-public class ToDoListClearedEvent {
+public class TodoItemDeletedEvent {
+	@NonNull private final String itemId;
 	private Optional<String> trackerId;
 }

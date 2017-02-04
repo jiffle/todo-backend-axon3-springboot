@@ -13,9 +13,9 @@ import org.axonframework.commandhandling.model.AggregateRoot;
 import org.axonframework.eventhandling.EventHandler;
 
 import lombok.extern.slf4j.Slf4j;
-import todo.domain.event.ToDoItemCreatedEvent;
-import todo.domain.event.ToDoItemDeletedEvent;
-import todo.domain.event.ToDoListClearedEvent;
+import todo.domain.event.TodoItemCreatedEvent;
+import todo.domain.event.TodoItemDeletedEvent;
+import todo.domain.event.TodoListClearedEvent;
 import todo.domain.event.TodoItemUpdatedEvent;
 import todo.helper.ConflictException;
 import todo.helper.ResourceNotFoundException;
@@ -31,7 +31,7 @@ public class TodoListAggregate {
 	private String id;
 	private CompletionTracker tracker;
 
-	private Map<String, ToDoItem> todos;
+	private Map<String, TodoItem> todos;
 	
 	public TodoListAggregate() {
 		todos = new HashMap<>();
@@ -46,15 +46,15 @@ public class TodoListAggregate {
 	}
 
 	public void addItem(String itemId, String title, boolean completed, Integer order, Optional<String> trackerId) {
-		ToDoItem existing = todos.get( itemId);
+		TodoItem existing = todos.get( itemId);
 		if( existing != null) {
 			throw new ConflictException();
 		}
-		apply( new ToDoItemCreatedEvent( itemId, title, completed, order, trackerId));		
+		apply( new TodoItemCreatedEvent( itemId, title, completed, order, trackerId));
 	}
 
 	public void updateItem(String itemId, Optional<String> title, Optional<Boolean> completed, Optional<Integer> order, Optional<String> trackerId) {
-		ToDoItem existing = todos.get( itemId);
+		TodoItem existing = todos.get( itemId);
 		if( existing == null) {
 			throw new ResourceNotFoundException();
 		}
@@ -62,28 +62,28 @@ public class TodoListAggregate {
 	}
 
 	public void deleteItem(String itemId, Optional<String> trackerId) {
-		ToDoItem existing = todos.get( itemId);
+		TodoItem existing = todos.get( itemId);
 		if( existing == null) {
 			throw new ResourceNotFoundException();
 		}
-		apply( new ToDoItemDeletedEvent( itemId, trackerId));		
+		apply( new TodoItemDeletedEvent( itemId, trackerId));
 	}
 	
 	public void clear( Optional<String> trackerId) {
-		apply( new ToDoListClearedEvent( trackerId));		
+		apply( new TodoListClearedEvent( trackerId));
 	}
 	
-	public Collection<ToDoItem> allValues() {
+	public Collection<TodoItem> allValues() {
 		return Collections.unmodifiableCollection( todos.values());
 	}
 	
-	public ToDoItem getValue(String itemId) {
+	public TodoItem getValue(String itemId) {
 		return todos.get( itemId);
 	}
 	
 	@EventHandler
-    public void handle( ToDoItemCreatedEvent event) {
-		ToDoItem item = new ToDoItem.Builder()
+    public void handle( TodoItemCreatedEvent event) {
+		TodoItem item = new TodoItem.Builder()
 				.id( event.getItemId())
 				.title( event.getTitle())
 				.completed( event.getCompleted())
@@ -96,7 +96,7 @@ public class TodoListAggregate {
 	
 	@EventHandler
     public void handle( TodoItemUpdatedEvent event) {
-		ToDoItem item = todos.get( event.getItemId());
+		TodoItem item = todos.get( event.getItemId());
 		if( item != null) {
 			event.getTitle().ifPresent( x -> item.setTitle( x));
 			event.getCompleted().ifPresent( x -> item.setCompleted( x));
@@ -109,8 +109,8 @@ public class TodoListAggregate {
     }
 	
 	@EventHandler
-    public void handle( ToDoItemDeletedEvent event) {
-		ToDoItem item = todos.remove( event.getItemId());
+    public void handle( TodoItemDeletedEvent event) {
+		TodoItem item = todos.remove( event.getItemId());
 		if( item == null) {
 			log.error( "Received deletion for non-existent todo item");			
 		}
@@ -119,7 +119,7 @@ public class TodoListAggregate {
     }
 	
 	@EventHandler
-    public void handle( ToDoListClearedEvent event) {
+    public void handle( TodoListClearedEvent event) {
 		todos.clear();;
 		
 		event.getTrackerId().ifPresent( x -> tracker.getListTracker().completeTracker( x, todos.values()));
