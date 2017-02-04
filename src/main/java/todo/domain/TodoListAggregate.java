@@ -33,10 +33,16 @@ public class TodoListAggregate {
 
 	private Map<String, ToDoItem> todos;
 	
-	public TodoListAggregate(CompletionTracker tracker, String id) {
-		this.id = id;
-		this.tracker = tracker;
+	public TodoListAggregate() {
 		todos = new HashMap<>();
+	}
+	
+	public void setId( String id) {
+		this.id = id;
+	}
+	
+	public void setTracker( CompletionTracker tracker) {
+		this.tracker = tracker;
 	}
 
 	public void addItem(String itemId, String title, boolean completed, Integer order, Optional<String> trackerId) {

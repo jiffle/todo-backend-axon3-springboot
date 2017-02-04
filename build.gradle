@@ -22,6 +22,7 @@ tasks.withType(JavaCompile) {
 ext {
   axonVersion = '3.0.1'
   springbootVersion = '1.5.1.RELEASE'
+  spockVersion = '1.1-groovy-2.4-rc-3'
 } 
 
 repositories {
@@ -29,6 +30,36 @@ repositories {
   mavenCentral()
 }
 
+sourceSets {
+	functionalTest {
+		groovy {
+			compileClasspath += main.output + test.output
+			runtimeClasspath += main.output + test.output
+			srcDir file('src/functional/groovy')
+		}
+		resources.srcDir file('src/functional/resources')
+	}
+}
+
+configurations {
+	functionalTestCompile.extendsFrom testCompile
+	functionalTestRuntime.extendsFrom testRuntime
+}
+
+idea {
+	module {
+	   testSourceDirs += file('src/functional/java')
+	   testSourceDirs += file('src/functional/resources')
+	   scopes.TEST.plus += [configurations.functionalTestCompile]
+	}
+ }
+
+eclipse {
+	 classpath {
+		 plusConfigurations += [ configurations.functionalTestCompile ]	
+	 }
+  }
+ 
 dependencies {
 	compile "org.springframework.boot:spring-boot-starter-web:${springbootVersion}"
 	compile "org.springframework.boot:spring-boot-starter-actuator:${springbootVersion}"
@@ -39,12 +70,28 @@ dependencies {
 	compile "org.projectlombok:lombok:1.16.12"
 // workaround for Lombok "cannot access javax.persistence.MappedSuperclass" error
 	compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
-    
+	compile 'org.hibernate:hibernate-validator:5.4.0.Final'
+
 	testCompile "org.codehaus.groovy:groovy-all:2.4.8"
 	testCompile "org.springframework.boot:spring-boot-starter-test:${springbootVersion}"
-    testCompile 'org.spockframework:spock-core:1.1-groovy-2.4-rc-3'
+    testCompile "org.spockframework:spock-core:${spockVersion}"
+	testCompile "org.spockframework:spock-spring:${spockVersion}"
     testCompile "junit:junit:4.12"
     testCompile "org.axonframework:axon-test:${axonVersion}"
-    testCompile "org.springframework:spring-test:4.1.6.RELEASE"
+    testCompile "org.springframework:spring-test:4.3.6.RELEASE"
     testCompile "org.mockito:mockito-all:1.10.19"
+	
+	functionalTestCompile "org.codehaus.groovy.modules.http-builder:http-builder:0.7.1"
 }
+
+task functionalTest(type: Test, dependsOn: jar) {
+    group 'Verification'
+    description 'Runs the functional tests.'
+	testClassesDir = sourceSets.functionalTest.output.classesDir
+	classpath = sourceSets.functionalTest.runtimeClasspath
+    systemProperties['jar.path'] = jar.archivePath
+	systemProperty('target.baseurl', System.getProperty("target.baseurl") ?: 'http://localhost:8080/')
+	reports.html.destination = file("$reports.html.destination/functional")
+}
+
+check.dependsOn functionalTest

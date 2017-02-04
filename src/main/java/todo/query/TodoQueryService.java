@@ -16,7 +16,7 @@ private final TodoListRepository repository;
 	}
 	
 	public Collection<ToDoItem> queryListForUser( String userId) {		
-		return repository.load( userId).allValues();
+		return repository.loadOrCreateInstance( userId).allValues();
 	}
 
 	public ToDoItem queryListForItem( String userId, String itemId) {

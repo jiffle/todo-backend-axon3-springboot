@@ -6,15 +6,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import todo.domain.ToDoItem;
 
+import javax.validation.constraints.NotNull;
+
 @Data
 @Builder( builderClassName="Builder")
 @NoArgsConstructor
 @AllArgsConstructor
 public class ToDoItemView {
 	private String id;
-	private String title;
+@NotNull private String title;
 	private Boolean completed;
-	private Integer order;
+@NotNull private Integer order;
 	private String url;
 	
     /*    @JsonCreator

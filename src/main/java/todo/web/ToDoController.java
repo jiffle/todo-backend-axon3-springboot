@@ -34,6 +34,8 @@ import todo.query.TodoQueryService;
 import todo.view.ToDoItemView;
 import todo.view.ToDoItemViewFactory;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RestController
 @RequestMapping("/todos")
@@ -60,7 +62,7 @@ public class ToDoController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<ToDoItemView> create(@RequestBody ToDoItemView todo) throws Throwable {
+    public ResponseEntity<ToDoItemView> create(@RequestBody @Valid ToDoItemView todo) throws Throwable {
         String itemId = UUID.randomUUID().toString();
 
         todo.setCompleted(false);

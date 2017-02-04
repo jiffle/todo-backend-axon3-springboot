@@ -12,8 +12,7 @@ public class ToDoItemViewFactorySpec extends Specification {
     }
 
     def "Creates A ToDo Item View"() {
-        def todo = ToDoItem.builder().title("feed the dog").order(1).build()
-        todo.setId("abc123")
+        def todo = ToDoItem.builder().id("abc123").title("feed the dog").order(1).build()
 
 		when:
         	def toDoItemView = toDoItemViewFactory.build(todo)

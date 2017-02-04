@@ -7,6 +7,7 @@ import org.axonframework.test.*
 import todo.domain.command.*
 import todo.domain.event.*
 
+import static java.util.Optional.of
 
 public class TodoListAggregateSpec extends Specification {
     def fixture
@@ -14,13 +15,14 @@ public class TodoListAggregateSpec extends Specification {
 
     def setup() {
         fixture = new AggregateTestFixture(TodoListAggregate.class)
-        todo = ToDoItem.builder().id("").title("do something").order( 2).build();
+        todo = ToDoItem.builder().id("abc123").title("do something").order( 2).build();
     }
 
     def "Creating Todo Items Emits Created Events"() {
         def test = fixture.given()
 		when:
-			def validator = test.when( new CreateToDoItemCommand("1", todo))
+			
+			def validator = test.when( new CreateToDoItemCommand("1", "abc123", "do something", false, 2, of("id57")))
 		then:
             validator.expectEvents( new ToDoItemCreatedEvent("1", todo))
 

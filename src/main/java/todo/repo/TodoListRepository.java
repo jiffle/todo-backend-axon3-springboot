@@ -46,7 +46,9 @@ private Map<String, TodoListAggregate> todoLists = new HashMap<>();
 	}
 
 	public TodoListAggregate createInstance( String aggregateId) {
-		TodoListAggregate result = new TodoListAggregate( tracker, aggregateId);
+		TodoListAggregate result = new TodoListAggregate();
+		result.setId( aggregateId);
+		result.setTracker( tracker);
 		AnnotatedAggregate.initialize( result, aggregateModel, eventBus);
 		todoLists.put( aggregateId, result);
         return result;
