@@ -20,7 +20,7 @@ public class CompletionTracker {
 	private CompletableStatus<TodoItem> itemTracker = new CompletableStatus<>();
 	private CompletableStatus< Collection<TodoItem>> listTracker = new CompletableStatus<>();
 		
-	public class CompletableStatus<T> {
+	public static class CompletableStatus<T> {
 		private Map<String, CompletableFuture<T>> trackers = new HashMap<>();
 		public void addTracker( String id, CompletableFuture<T> future) {
 			CompletableFuture<T> old = trackers.put( id, future);
