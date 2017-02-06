@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import todo.domain.TodoListAggregate;
 import todo.helper.ResourceNotFoundException;
-import todo.middleware.CompletionTracker;;
+import todo.middleware.CompletionTracker;
 
 /** Repository of Todo lists 
  */

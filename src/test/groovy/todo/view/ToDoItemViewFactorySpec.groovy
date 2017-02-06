@@ -3,7 +3,7 @@ package todo.view
 import spock.lang.*
 import todo.domain.TodoItem
 
-public class ToDoItemViewFactorySpec extends Specification {
+class ToDoItemViewFactorySpec extends Specification {
 
     def toDoItemViewFactory
     def baseUrl = "http://test.host/todos"

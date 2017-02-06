@@ -120,7 +120,7 @@ public class TodoListAggregate {
 	
 	@EventHandler
     public void handle( TodoListClearedEvent event) {
-		todos.clear();;
+		todos.clear();
 		
 		event.getTrackerId().ifPresent( x -> tracker.getListTracker().completeTracker( x, todos.values()));
     }

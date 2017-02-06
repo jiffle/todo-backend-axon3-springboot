@@ -32,6 +32,7 @@ public class CompletionTracker {
 			CompletableFuture<T> future = trackers.get( id);
 			if( future == null) {
 				log.warn( "Could not find Completion Tracker for id={}", id);
+				return false;
 			}
 			return future.complete( data);
 		}

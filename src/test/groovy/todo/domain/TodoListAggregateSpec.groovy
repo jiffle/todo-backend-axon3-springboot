@@ -7,7 +7,7 @@ import todo.domain.event.*
 
 import static java.util.Optional.of
 
-public class TodoListAggregateSpec extends Specification {
+class TodoListAggregateSpec extends Specification {
     def fixture
     def todo
 
