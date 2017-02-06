@@ -83,7 +83,7 @@ public class TodoListAggregate {
 	
 	@EventHandler
     public void handle( TodoItemCreatedEvent event) {
-		TodoItem item = new TodoItem.Builder()
+		TodoItem item = TodoItem.builder()
 				.id( event.getItemId())
 				.title( event.getTitle())
 				.completed( event.getCompleted())
@@ -98,9 +98,9 @@ public class TodoListAggregate {
     public void handle( TodoItemUpdatedEvent event) {
 		TodoItem item = todos.get( event.getItemId());
 		if( item != null) {
-			event.getTitle().ifPresent( x -> item.setTitle( x));
-			event.getCompleted().ifPresent( x -> item.setCompleted( x));
-			event.getOrder().ifPresent( x -> item.setOrder( x));	
+			event.getTitle().ifPresent( item::setTitle);
+			event.getCompleted().ifPresent( item::setCompleted);
+			event.getOrder().ifPresent( item::setOrder);
 		} else {
 			log.error( "Received update for non-existent todo item");			
 		}

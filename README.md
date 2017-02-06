@@ -6,10 +6,12 @@ Forked from Ryan Oglesby's [Todo-backend-axon project](https://github.com/ryanog
 
 Using the new Event and Command handlers of Axon Framework 3, it uses a non-persisting Repository implementation to materialise the Todo List.
 
-It has complete functional tests for the API in the `todo.TodoAPISpec` class
+Written as a prototype (mostly without unit tests), it has complete functional tests for the API in the `todo.TodoAPISpec` class
 
 Things still To Do (ironically!):
 
 * Refactor controller code into a Façade Service
+* Replace CompletableFuture with either a simpler semaphore approach, or an event dispatched back to the controller/façade 
 * Integrate with Axon Test Framework, as the repository implementation is incompatible with the default Axon fixtures
+* Retrofit unit tests
 
