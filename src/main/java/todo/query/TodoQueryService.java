@@ -1,27 +1,12 @@
 package todo.query;
 
+import todo.domain.TodoItem;
+
 import java.util.Collection;
 
-import org.springframework.stereotype.Service;
+/** Service for querying to do lists and items */
+public interface TodoQueryService {
+    Collection<TodoItem> queryListForUser(String userId);
 
-import todo.domain.TodoItem;
-import todo.repo.TodoListRepository;
-
-@Service
-public class TodoQueryService {
-private final TodoListRepository repository;	
-	
-	public TodoQueryService(TodoListRepository repository) {
-		this.repository = repository;
-	}
-	
-	public Collection<TodoItem> queryListForUser(String userId) {
-		return repository.loadOrCreateInstance( userId).allValues();
-	}
-
-	public TodoItem queryListForItem(String userId, String itemId) {
-		return repository.load( userId).getValue( itemId);
-	}
-
-	
+    TodoItem queryListForItem(String userId, String itemId);
 }
