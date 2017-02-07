@@ -22,7 +22,7 @@ apply plugin: 'net.ltgt.errorprone'
 group = 'net.jiffle'
 version = '0.0.1'
 
-description = "Todo Backend example using SparkJava, Axon & Spock"
+description = "Todo Backend example using SpringBoot, Axon3 & Spock"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
