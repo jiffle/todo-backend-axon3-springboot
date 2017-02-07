@@ -18,7 +18,7 @@ import todo.domain.event.TodoItemDeletedEvent;
 import todo.domain.event.TodoListClearedEvent;
 import todo.domain.event.TodoItemUpdatedEvent;
 import todo.helper.ConflictException;
-import todo.helper.ResourceNotFoundException;
+import todo.helper.NotFoundException;
 import todo.middleware.CompletionTracker;
 
 /** Aggregate root for the TodoList (singleton per session)
@@ -56,7 +56,7 @@ public class TodoListAggregate {
 	public void updateItem(String itemId, Optional<String> title, Optional<Boolean> completed, Optional<Integer> order, Optional<String> trackerId) {
 		TodoItem existing = todos.get( itemId);
 		if( existing == null) {
-			throw new ResourceNotFoundException();
+			throw new NotFoundException();
 		}
 		apply( new TodoItemUpdatedEvent( itemId, title, completed, order, trackerId));		
 	}
@@ -64,7 +64,7 @@ public class TodoListAggregate {
 	public void deleteItem(String itemId, Optional<String> trackerId) {
 		TodoItem existing = todos.get( itemId);
 		if( existing == null) {
-			throw new ResourceNotFoundException();
+			throw new NotFoundException();
 		}
 		apply( new TodoItemDeletedEvent( itemId, trackerId));
 	}

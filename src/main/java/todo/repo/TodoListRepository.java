@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import todo.domain.TodoListAggregate;
-import todo.helper.ResourceNotFoundException;
+import todo.helper.NotFoundException;
 import todo.middleware.CompletionTracker;
 
 /** Repository of Todo lists 
@@ -36,10 +36,10 @@ public TodoListRepository(CompletionTracker tracker, EventBus eventBus) {
 
 private Map<String, TodoListAggregate> todoLists = new HashMap<>();
 	
-	public TodoListAggregate load( String aggregateId) throws ResourceNotFoundException {
+	public TodoListAggregate load( String aggregateId) throws NotFoundException {
 		TodoListAggregate result = todoLists.get( aggregateId);
 		if( result == null) {
-			throw new ResourceNotFoundException( "No todo list found for user");
+			throw new NotFoundException( "No todo list found for user");
 		}
 		AnnotatedAggregate.initialize( result, aggregateModel, eventBus);
 		return result;
@@ -58,7 +58,7 @@ private Map<String, TodoListAggregate> todoLists = new HashMap<>();
 		TodoListAggregate result;
 		try {
 			result = load( aggregateId);
-		} catch (ResourceNotFoundException e) {
+		} catch (NotFoundException e) {
 			result = createInstance( aggregateId);
 		}
 		return result;

@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import todo.domain.TodoItem;
-import todo.helper.ResourceNotFoundException;
+import todo.helper.NotFoundException;
 import todo.web.TodoController;
 
 @Component
@@ -27,7 +27,7 @@ public class TodoItemViewFactory {
     
     public TodoItemView buildItem(TodoItem item) {
     	if( item == null) {
-    		throw new ResourceNotFoundException( "Todo Item was not found");
+    		throw new NotFoundException( "Todo Item was not found");
     	}
     	return new TodoItemView.Builder()
     			.todoItem(item)
