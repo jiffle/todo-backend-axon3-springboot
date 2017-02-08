@@ -88,6 +88,7 @@ dependencies {
 	testCompile "org.springframework.boot:spring-boot-starter-test:${springbootVersion}"
     testCompile "org.spockframework:spock-core:${spockVersion}"
 	testCompile "org.spockframework:spock-spring:${spockVersion}"
+	testCompile "cglib:cglib-nodep:3.2.4"
     testCompile "junit:junit:4.12"
     testCompile "org.axonframework:axon-test:${axonVersion}"
     testCompile "org.springframework:spring-test:4.3.6.RELEASE"

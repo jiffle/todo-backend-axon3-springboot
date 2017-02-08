@@ -22,11 +22,13 @@ public class CompletionTracker {
 		
 	public static class CompletableStatus<T> {
 		private Map<String, CompletableFuture<T>> trackers = new HashMap<>();
-		public void addTracker( String id, CompletableFuture<T> future) {
-			CompletableFuture<T> old = trackers.put( id, future);
+		public CompletableFuture<T> addTracker( String id) {
+			CompletableFuture<T> result = new CompletableFuture<>();
+			CompletableFuture<T> old = trackers.put( id, result);
 			if (old != null) {
 				log.warn( "Found existing Completion Tracker for when adding new one for id={}", id);
 			}
+			return result;
 		}
 		public boolean completeTracker( String id, T data) {
 			CompletableFuture<T> future = trackers.get( id);

@@ -60,9 +60,9 @@ public class TodoController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<TodoItemView> index() {
+    public @ResponseBody List<TodoItemView> index() {
 
-        return viewFactory.buildList( facadeService.getTodoList( USER_ID));
+        return viewFactory.buildList( facadeService.getList( USER_ID));
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -73,8 +73,7 @@ public class TodoController {
         todo.setId( itemId);
         
         String trackerId = UUID.randomUUID().toString();
-        CompletableFuture<TodoItem> future = new CompletableFuture<>();
-        completionTracker.getItemTracker().addTracker(trackerId, future);
+        CompletableFuture<TodoItem> future = completionTracker.getItemTracker().addTracker(trackerId);
         try {
         	commandGateway.sendAndWait( new CreateTodoItemCommand( USER_ID, itemId, todo.getTitle(), todo.getCompleted(), todo.getOrder(), of( trackerId)),
         			1, TimeUnit.SECONDS);
@@ -93,19 +92,9 @@ public class TodoController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE)
-    public ResponseEntity<Collection<TodoItemView>> clear() {
-        String trackerId = UUID.randomUUID().toString();
-        CompletableFuture<Collection<TodoItem>> future = new CompletableFuture<>();
-        completionTracker.getListTracker().addTracker(trackerId, future);
-        commandGateway.send( new ClearTodoListCommand( USER_ID, of( trackerId)));        
-        try {
-        	Collection<TodoItem> items = future.get(1, TimeUnit.SECONDS);
-			List<TodoItemView> result = viewFactory.buildList( items);
-	        return new ResponseEntity<>( result, HttpStatus.OK);
-		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			log.error( "Could not retrieve response to render output", e);
-			return new ResponseEntity<Collection<TodoItemView>>( HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+    public @ResponseBody Collection<TodoItemView> clear() {
+        Collection<TodoItem> items = facadeService.deleteList( USER_ID);
+        return viewFactory.buildList( items);
     }
 
     @RequestMapping(value = TODO_URL, method = RequestMethod.GET)
@@ -117,8 +106,7 @@ public class TodoController {
     @RequestMapping(value = TODO_URL, method = RequestMethod.PATCH)
     public ResponseEntity<TodoItemView> update(@PathVariable String id, @RequestBody TodoItemView todo) throws Throwable {
         String trackerId = UUID.randomUUID().toString();
-        CompletableFuture<TodoItem> future = new CompletableFuture<>();
-        completionTracker.getItemTracker().addTracker(trackerId, future);
+        CompletableFuture<TodoItem> future = completionTracker.getItemTracker().addTracker(trackerId);
         try {
         	commandGateway.sendAndWait( new UpdateTodoItemCommand( USER_ID, id, todo.getTitle(), todo.getCompleted(), todo.getOrder(), of( trackerId)),
         			1, TimeUnit.SECONDS);
@@ -139,8 +127,7 @@ public class TodoController {
     @RequestMapping(value = TODO_URL, method = RequestMethod.DELETE)
     public ResponseEntity<String> delete(@PathVariable String id) throws Throwable {
         String trackerId = UUID.randomUUID().toString();
-        CompletableFuture<TodoItem> future = new CompletableFuture<>();
-        completionTracker.getItemTracker().addTracker(trackerId, future);
+        CompletableFuture<TodoItem> future = completionTracker.getItemTracker().addTracker(trackerId);
         try {
         	commandGateway.sendAndWait( new DeleteTodoItemCommand( USER_ID, id, of( trackerId)),
         			1, TimeUnit.SECONDS);
