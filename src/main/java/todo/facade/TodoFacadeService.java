@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import todo.domain.TodoItem;
 import todo.domain.command.ClearTodoListCommand;
+import todo.domain.command.CreateTodoItemCommand;
 import todo.domain.command.DeleteTodoItemCommand;
+import todo.domain.command.UpdateTodoItemCommand;
 import todo.helper.InternalServerErrorException;
+import todo.helper.NotFoundException;
 import todo.middleware.CompletionTracker;
 import todo.query.TodoQueryService;
 import todo.view.TodoItemView;
@@ -49,7 +52,51 @@ public class TodoFacadeService {
     }
 
     public TodoItem getItem( String userId, String itemId) {
-        return queryService.queryListForItem( userId, itemId);
+        return queryService.queryListForItem(userId, itemId);
+    }
+
+    public TodoItem createItem( String userId, String itemId, String title, boolean completed, Integer order) throws Throwable {
+        String trackerId = UUID.randomUUID().toString();
+        CompletableFuture<TodoItem> future = completionTracker.getItemTracker().addTracker( trackerId);
+        try {
+            commandGateway.sendAndWait( new CreateTodoItemCommand( userId, itemId, title, completed, order, of( trackerId)),
+                    1, TimeUnit.SECONDS);
+            return future.get(1, TimeUnit.SECONDS);
+        } catch (CommandExecutionException e) {
+            if( e.getCause() != null) {
+                throw e.getCause();
+            }
+            log.error( "Got CommandExecutionException with no underlying cause", e);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            log.error( "Could not retrieve response to render output", e);
+        }
+        throw new InternalServerErrorException( "Timeout waiting for action to be processed");
+    }
+
+    public TodoItem updateItem( String userId, String itemId, String title, Boolean completed, Integer order) {
+        String trackerId = UUID.randomUUID().toString();
+        CompletableFuture<TodoItem> future = completionTracker.getItemTracker().addTracker(trackerId);
+        try {
+            commandGateway.sendAndWait( new UpdateTodoItemCommand( userId, itemId, title, completed, order, of( trackerId)),
+                    1, TimeUnit.SECONDS);
+            return future.get(1, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            log.error( "Could not retrieve response to render output", e);
+        }
+        throw new InternalServerErrorException( "Timeout waiting for action to be processed");
+    }
+
+    public TodoItem deleteItem( String userId, String itemId) throws Throwable {
+        String trackerId = UUID.randomUUID().toString();
+        CompletableFuture<TodoItem> future = completionTracker.getItemTracker().addTracker(trackerId);
+        try {
+            commandGateway.sendAndWait( new DeleteTodoItemCommand( userId, itemId, of( trackerId)),
+                    1, TimeUnit.SECONDS);
+            return future.get(1, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            log.error( "Could not retrieve response to render output", e);
+        }
+        throw new InternalServerErrorException( "Timeout waiting for action to be processed");
     }
 
     public Collection<TodoItem> deleteList(String userId) {
@@ -60,8 +107,8 @@ public class TodoFacadeService {
             return future.get(1, TimeUnit.SECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             log.error("Could not retrieve response to render output", e);
-            throw new InternalServerErrorException( "Timeout waiting for action to be processed");
         }
+        throw new InternalServerErrorException( "Timeout waiting for action to be processed");
     }
 
 }

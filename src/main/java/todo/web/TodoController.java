@@ -66,35 +66,16 @@ public class TodoController {
     }
 
     @RequestMapping(value = TODO_URL, method = RequestMethod.GET)
-    public @ResponseBody
-    TodoItemView show(@PathVariable String id) {
+    public @ResponseBody TodoItemView show(@PathVariable String id) {
         return viewFactory.buildItem( facadeService.getItem( USER_ID, id));
     }
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<TodoItemView> create(@RequestBody @Valid TodoItemView todo) throws Throwable {
         String itemId = UUID.randomUUID().toString();
-
-        todo.setCompleted(false);
-        todo.setId( itemId);
-        
-        String trackerId = UUID.randomUUID().toString();
-        CompletableFuture<TodoItem> future = completionTracker.getItemTracker().addTracker(trackerId);
-        try {
-        	commandGateway.sendAndWait( new CreateTodoItemCommand( USER_ID, itemId, todo.getTitle(), todo.getCompleted(), todo.getOrder(), of( trackerId)),
-        			1, TimeUnit.SECONDS);
-			TodoItem item = future.get(1, TimeUnit.SECONDS);
-			TodoItemView result = viewFactory.buildItem( item);
-	        return new ResponseEntity<>( result, HttpStatus.CREATED);
-		} catch (CommandExecutionException e) {
-			if( e.getCause() != null) {
-				throw e.getCause();
-			}
-			log.error( "Got CommandExecutionException with no underlying cause", e);
-		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			log.error( "Could not retrieve response to render output", e);
-		}
-        return new ResponseEntity<TodoItemView>( HttpStatus.INTERNAL_SERVER_ERROR);
+        TodoItem item = facadeService.createItem( USER_ID, itemId, todo.getTitle(), false, todo.getOrder());
+        TodoItemView result = viewFactory.buildItem( item);
+        return new ResponseEntity<>( result, HttpStatus.CREATED);
     }
 
     @RequestMapping(method = RequestMethod.DELETE)
@@ -104,43 +85,15 @@ public class TodoController {
     }
 
     @RequestMapping(value = TODO_URL, method = RequestMethod.PATCH)
-    public ResponseEntity<TodoItemView> update(@PathVariable String id, @RequestBody TodoItemView todo) throws Throwable {
+    public TodoItemView update(@PathVariable String id, @RequestBody TodoItemView todo) throws Throwable {
         String trackerId = UUID.randomUUID().toString();
-        CompletableFuture<TodoItem> future = completionTracker.getItemTracker().addTracker(trackerId);
-        try {
-        	commandGateway.sendAndWait( new UpdateTodoItemCommand( USER_ID, id, todo.getTitle(), todo.getCompleted(), todo.getOrder(), of( trackerId)),
-        			1, TimeUnit.SECONDS);
-			TodoItem item = future.get(1, TimeUnit.SECONDS);
-			TodoItemView result = viewFactory.buildItem( item);
-	        return new ResponseEntity<>( result, HttpStatus.OK);
-		} catch (CommandExecutionException e) {
-			if( e.getCause() != null) {
-				throw e.getCause();
-			}
-			log.error( "Got CommandExecutionException with no underlying cause", e);
-		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			log.error( "Could not retrieve response to render output", e);
-		}
-        return new ResponseEntity<TodoItemView>( HttpStatus.INTERNAL_SERVER_ERROR);
+        TodoItem item = facadeService.updateItem(USER_ID, id, todo.getTitle(), todo.getCompleted(), todo.getOrder());
+        return viewFactory.buildItem( item);
     }
 
     @RequestMapping(value = TODO_URL, method = RequestMethod.DELETE)
     public ResponseEntity<String> delete(@PathVariable String id) throws Throwable {
-        String trackerId = UUID.randomUUID().toString();
-        CompletableFuture<TodoItem> future = completionTracker.getItemTracker().addTracker(trackerId);
-        try {
-        	commandGateway.sendAndWait( new DeleteTodoItemCommand( USER_ID, id, of( trackerId)),
-        			1, TimeUnit.SECONDS);
-			TodoItem item = future.get(1, TimeUnit.SECONDS);
-	        return new ResponseEntity<>( "{}", HttpStatus.OK);
-		} catch (CommandExecutionException e) {
-			if( e.getCause() != null) {
-				throw e.getCause();
-			}
-			log.error( "Got CommandExecutionException with no underlying cause", e);
-		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			log.error( "Could not retrieve response to render output", e);
-		}
-        return new ResponseEntity<String>( HttpStatus.INTERNAL_SERVER_ERROR);
+        facadeService.deleteItem( USER_ID, id);
+        return new ResponseEntity<>( "{}", HttpStatus.OK);
     }
 }

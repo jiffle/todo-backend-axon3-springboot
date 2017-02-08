@@ -23,6 +23,7 @@ import todo.query.TodoQueryService;
 import todo.view.TodoItemViewFactory;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -105,7 +106,7 @@ public class ToDoControllerTest {
     public void show_rendersViewOfASingleTodo() throws Exception {
         TodoItem todo = TodoItem.builder().id("123abc").title("do something").completed(true).order( 2).build();
 
-        when( queryService.queryListForItem( "1", "123abc")).thenReturn(todo);
+        when( queryService.queryListForItem( "1", "123abc")).thenReturn( todo);
 
         mockMvc.perform(get("/todos/{id}", "123abc"))
                 .andExpect(status().isOk())
