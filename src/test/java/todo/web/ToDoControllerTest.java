@@ -17,6 +17,7 @@ import todo.domain.TodoItem;
 import todo.domain.command.CreateTodoItemCommand;
 import todo.domain.command.DeleteTodoItemCommand;
 import todo.domain.command.UpdateTodoItemCommand;
+import todo.facade.TodoFacadeService;
 import todo.middleware.CompletionTracker;
 import todo.query.TodoQueryService;
 import todo.view.TodoItemViewFactory;
@@ -38,6 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ToDoControllerTest {
     private MockMvc mockMvc;
     @Mock
+    private TodoFacadeService facadeService;
+    @Mock
     private CommandGateway commandGateway;
     @Mock
     private TodoQueryService queryService;
@@ -49,7 +52,7 @@ public class ToDoControllerTest {
         initMocks(this);
 
         TodoItemViewFactory viewFactory = new TodoItemViewFactory("http://test.host/todos");
-        TodoController todoController = new TodoController(commandGateway, queryService, viewFactory, completionTracker);
+        TodoController todoController = new TodoController( facadeService, commandGateway, queryService, viewFactory, completionTracker);
 
         mockMvc = MockMvcBuilders.standaloneSetup(todoController).build();
     }

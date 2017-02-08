@@ -29,6 +29,7 @@ import todo.domain.command.ClearTodoListCommand;
 import todo.domain.command.CreateTodoItemCommand;
 import todo.domain.command.DeleteTodoItemCommand;
 import todo.domain.command.UpdateTodoItemCommand;
+import todo.facade.TodoFacadeService;
 import todo.middleware.CompletionTracker;
 import todo.query.TodoQueryService;
 import todo.view.TodoItemView;
@@ -42,15 +43,17 @@ import javax.validation.Valid;
 public class TodoController {
     public static final String TODO_URL = "/{id}";
     private static final String USER_ID = "1";
-    
+
+    private final TodoFacadeService facadeService;
     private final CommandGateway commandGateway;
     private final TodoQueryService queryService;
     private final TodoItemViewFactory viewFactory;
     private final CompletionTracker completionTracker;
 
     @Autowired
-    public TodoController(@NonNull CommandGateway commandGateway, @NonNull TodoQueryService queryService, @NonNull TodoItemViewFactory toDoItemViewFactory, CompletionTracker completionTracker) {
-		this.commandGateway = commandGateway;
+    public TodoController( @NonNull TodoFacadeService facadeService, @NonNull CommandGateway commandGateway, @NonNull TodoQueryService queryService, @NonNull TodoItemViewFactory toDoItemViewFactory, CompletionTracker completionTracker) {
+        this.facadeService = facadeService;
+        this.commandGateway = commandGateway;
         this.queryService = queryService;
         this.viewFactory = toDoItemViewFactory;
         this.completionTracker = completionTracker;
@@ -58,7 +61,8 @@ public class TodoController {
 
     @RequestMapping(method = RequestMethod.GET)
     public List<TodoItemView> index() {
-        return viewFactory.buildList( queryService.queryListForUser( USER_ID));
+
+        return viewFactory.buildList( facadeService.getTodoList( USER_ID));
     }
 
     @RequestMapping(method = RequestMethod.POST)
