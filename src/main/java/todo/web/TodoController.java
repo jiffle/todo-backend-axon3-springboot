@@ -1,41 +1,20 @@
 package todo.web;
 
-import static java.util.Optional.of;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import org.axonframework.commandhandling.CommandExecutionException;
-import org.axonframework.commandhandling.gateway.CommandGateway;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 import todo.domain.TodoItem;
-import todo.domain.command.ClearTodoListCommand;
-import todo.domain.command.CreateTodoItemCommand;
-import todo.domain.command.DeleteTodoItemCommand;
-import todo.domain.command.UpdateTodoItemCommand;
 import todo.facade.TodoFacadeService;
-import todo.middleware.CompletionTracker;
-import todo.query.TodoQueryService;
 import todo.view.TodoItemView;
 import todo.view.TodoItemViewFactory;
 
 import javax.validation.Valid;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -45,18 +24,12 @@ public class TodoController {
     private static final String USER_ID = "1";
 
     private final TodoFacadeService facadeService;
-    private final CommandGateway commandGateway;
-    private final TodoQueryService queryService;
     private final TodoItemViewFactory viewFactory;
-    private final CompletionTracker completionTracker;
 
     @Autowired
-    public TodoController( @NonNull TodoFacadeService facadeService, @NonNull CommandGateway commandGateway, @NonNull TodoQueryService queryService, @NonNull TodoItemViewFactory toDoItemViewFactory, CompletionTracker completionTracker) {
+    public TodoController( @NonNull TodoFacadeService facadeService, @NonNull TodoItemViewFactory toDoItemViewFactory) {
         this.facadeService = facadeService;
-        this.commandGateway = commandGateway;
-        this.queryService = queryService;
         this.viewFactory = toDoItemViewFactory;
-        this.completionTracker = completionTracker;
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -85,7 +58,7 @@ public class TodoController {
     }
 
     @RequestMapping(value = TODO_URL, method = RequestMethod.PATCH)
-    public TodoItemView update(@PathVariable String id, @RequestBody TodoItemView todo) throws Throwable {
+    public @ResponseBody TodoItemView update(@PathVariable String id, @RequestBody TodoItemView todo) throws Throwable {
         String trackerId = UUID.randomUUID().toString();
         TodoItem item = facadeService.updateItem(USER_ID, id, todo.getTitle(), todo.getCompleted(), todo.getOrder());
         return viewFactory.buildItem( item);
