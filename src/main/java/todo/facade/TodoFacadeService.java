@@ -44,8 +44,12 @@ public class TodoFacadeService {
         this.completionTracker = completionTracker;
     }
 
-    public Collection<TodoItem> getList(String userId) {
-        return queryService.queryListForUser(userId);
+    public Collection<TodoItem> getList( String userId) {
+        return queryService.queryListForUser( userId);
+    }
+
+    public TodoItem getItem( String userId, String itemId) {
+        return queryService.queryListForItem( userId, itemId);
     }
 
     public Collection<TodoItem> deleteList(String userId) {

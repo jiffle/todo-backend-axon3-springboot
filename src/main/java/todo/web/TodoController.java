@@ -65,6 +65,12 @@ public class TodoController {
         return viewFactory.buildList( facadeService.getList( USER_ID));
     }
 
+    @RequestMapping(value = TODO_URL, method = RequestMethod.GET)
+    public @ResponseBody
+    TodoItemView show(@PathVariable String id) {
+        return viewFactory.buildItem( facadeService.getItem( USER_ID, id));
+    }
+
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<TodoItemView> create(@RequestBody @Valid TodoItemView todo) throws Throwable {
         String itemId = UUID.randomUUID().toString();
@@ -95,12 +101,6 @@ public class TodoController {
     public @ResponseBody Collection<TodoItemView> clear() {
         Collection<TodoItem> items = facadeService.deleteList( USER_ID);
         return viewFactory.buildList( items);
-    }
-
-    @RequestMapping(value = TODO_URL, method = RequestMethod.GET)
-    public @ResponseBody
-    TodoItemView show(@PathVariable String id) {
-        return viewFactory.buildItem( queryService.queryListForItem(USER_ID, id));
     }
 
     @RequestMapping(value = TODO_URL, method = RequestMethod.PATCH)
