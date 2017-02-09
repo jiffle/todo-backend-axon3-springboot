@@ -8,6 +8,7 @@ import todo.domain.command.CreateTodoItemCommand
 import todo.domain.command.DeleteTodoItemCommand
 import todo.domain.command.UpdateTodoItemCommand
 import todo.exception.InternalServerErrorException
+import todo.exception.NotFoundException
 import todo.helper.CompletionLatchFactory
 import todo.middleware.CompletionTracker
 import todo.query.TodoQueryService
@@ -83,6 +84,16 @@ class TodoFacadeServiceSpec extends Specification {
         todo == expectItem
     }
 
+    def "Create item with timeout should throw exception"() {
+
+        when:
+        def todo = facadeService.createItem( userId, expectId, expectTitle, expectCompleted, expectOrder)
+        then:
+        1 * commandGateway.sendAndWait( _, _, _)
+        1 * latch.await( _, _) >> false
+        thrown( InternalServerErrorException)
+    }
+
     def "Patch item should return the modified item"() {
         given:
         String updatedTitle = "Updated Title"
@@ -99,6 +110,27 @@ class TodoFacadeServiceSpec extends Specification {
         todo == updatedItem
     }
 
+    def "Patch item for invalid ID should return throw an exception"() {
+        given:
+        String updatedTitle = "Updated Title"
+        when:
+        def todo = facadeService.updateItem( userId, expectId, updatedTitle, expectCompleted, expectOrder)
+        then:
+        1 * commandGateway.sendAndWait( _, _, _) >> { throw new NotFoundException()}
+        thrown( NotFoundException)
+    }
+
+    def "Patch item with timeout should throw exception"() {
+        given:
+        String updatedTitle = "Updated Title"
+        when:
+        def todo = facadeService.updateItem( userId, expectId, updatedTitle, expectCompleted, expectOrder)
+        then:
+        1 * commandGateway.sendAndWait( _, _, _)
+        1 * latch.await( _, _) >> false
+        thrown( InternalServerErrorException)
+    }
+
     def "Delete item should return an empty item"() {
 
         when:
@@ -108,6 +140,24 @@ class TodoFacadeServiceSpec extends Specification {
         1 * latch.await( _, _) >> true
         1 * queryService.queryListForItem( userId, expectId) >> expectItem
         todo == expectItem      // delete returns the deleted item
+    }
+
+    def "Delete item for invalid ID should return throw an exception"() {
+
+        when:
+        def todo = facadeService.deleteItem( userId, expectId)
+        then:
+        1 * commandGateway.sendAndWait( _, _, _) >> { throw new NotFoundException()}
+        thrown( NotFoundException)
+    }
+
+    def "Delete item with timeout should throw exception"() {
+
+        when:
+        def todo = facadeService.deleteItem( userId, expectId)
+        then:
+        1 * commandGateway.sendAndWait( _, _, _)
+        thrown( InternalServerErrorException)
     }
 
     def "Delete List should return an empty list"() {
@@ -126,19 +176,9 @@ class TodoFacadeServiceSpec extends Specification {
         when:
         def todos = facadeService.deleteList( userId)
         then:
-        1 * commandGateway.send({ ClearTodoListCommand cmd -> cmd.userId == userId})
+        1 * commandGateway.send( _)
         1 * latch.await( _, _) >> false
         thrown( InternalServerErrorException)
     }
 
-    def "Delete item should return an empty list - version 2"() {
-
-        when:
-        def todos = facadeService.deleteList( userId)
-        then:
-        1 * commandGateway.send({ ClearTodoListCommand cmd -> cmd.userId == userId})
-        1 * latch.await( _, _) >> true
-        1 * queryService.queryListForUser( userId) >> emptyList
-        todos.size() == 0
-    }
 }

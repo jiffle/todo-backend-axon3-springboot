@@ -59,7 +59,6 @@ public class TodoController {
 
     @RequestMapping(value = TODO_URL, method = RequestMethod.PATCH)
     public @ResponseBody TodoItemView update(@PathVariable String id, @RequestBody TodoItemView todo) throws Throwable {
-        String trackerId = UUID.randomUUID().toString();
         TodoItem item = facadeService.updateItem(USER_ID, id, todo.getTitle(), todo.getCompleted(), todo.getOrder());
         return viewFactory.buildItem( item);
     }

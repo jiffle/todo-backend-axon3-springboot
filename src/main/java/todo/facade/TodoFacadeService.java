@@ -10,6 +10,7 @@ import todo.domain.command.ClearTodoListCommand;
 import todo.domain.command.CreateTodoItemCommand;
 import todo.domain.command.DeleteTodoItemCommand;
 import todo.domain.command.UpdateTodoItemCommand;
+import todo.exception.BaseWebException;
 import todo.exception.InternalServerErrorException;
 import todo.helper.CompletionLatchFactory;
 import todo.middleware.CompletionTracker;
@@ -45,7 +46,7 @@ public class TodoFacadeService {
         return queryService.queryListForItem(userId, itemId);
     }
 
-    public TodoItem createItem( String userId, String itemId, String title, boolean completed, Integer order) throws Throwable {
+    public TodoItem createItem( String userId, String itemId, String title, boolean completed, Integer order) throws BaseWebException {
         CountDownLatch latch = latchFactory.createInstance();
         try {
             commandGateway.sendAndWait( new CreateTodoItemCommand( userId, itemId, title, completed, order, latch),
@@ -54,17 +55,17 @@ public class TodoFacadeService {
                 return getItem( userId, itemId);
             }
         } catch (CommandExecutionException e) {
-            if( e.getCause() != null) {
-                throw e.getCause();
+            if( e.getCause() instanceof BaseWebException) {
+                throw (BaseWebException) e.getCause();
             }
-            log.error( "Got CommandExecutionException with no underlying cause", e);
+            log.error( "Got CommandExecutionException with unexpected underlying cause", e);
         } catch (InterruptedException e) {
             log.error( "Interrupted waiting for response to complete");
         }
         throw new InternalServerErrorException( "Timeout waiting for action to be processed");
     }
 
-    public TodoItem updateItem( String userId, String itemId, String title, Boolean completed, Integer order) {
+    public TodoItem updateItem( String userId, String itemId, String title, Boolean completed, Integer order) throws BaseWebException {
         CountDownLatch latch = latchFactory.createInstance();
         try {
             commandGateway.sendAndWait( new UpdateTodoItemCommand( userId, itemId, title, completed, order, latch),
@@ -72,13 +73,18 @@ public class TodoFacadeService {
             if( latch.await( 1, TimeUnit.SECONDS)) {
                 return getItem( userId, itemId);
             }
+        } catch (CommandExecutionException e) {
+            if( e.getCause() instanceof BaseWebException) {
+                throw (BaseWebException) e.getCause();
+            }
+            log.error( "Got CommandExecutionException with unexpected underlying cause", e);
         } catch (InterruptedException e) {
             log.error( "Interrupted waiting for response to complete");
         }
         throw new InternalServerErrorException( "Timeout waiting for action to be processed");
     }
 
-    public TodoItem deleteItem( String userId, String itemId) throws Throwable {
+    public TodoItem deleteItem( String userId, String itemId) throws BaseWebException {
         CountDownLatch latch = latchFactory.createInstance();
         try {
             commandGateway.sendAndWait( new DeleteTodoItemCommand( userId, itemId, latch),
@@ -86,6 +92,11 @@ public class TodoFacadeService {
             if( latch.await( 1, TimeUnit.SECONDS)) {
                 return getItem( userId, itemId);
             }
+        } catch (CommandExecutionException e) {
+            if( e.getCause() instanceof BaseWebException) {
+                throw (BaseWebException) e.getCause();
+            }
+            log.error( "Got CommandExecutionException with unexpected underlying cause", e);
         } catch (InterruptedException e) {
             log.error( "Interrupted waiting for response to complete");
         }
