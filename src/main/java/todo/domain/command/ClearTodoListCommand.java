@@ -1,6 +1,7 @@
 package todo.domain.command;
 
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 
 import org.axonframework.commandhandling.TargetAggregateIdentifier;
 
@@ -11,5 +12,5 @@ import lombok.Value;
 public class ClearTodoListCommand {
     @TargetAggregateIdentifier
     @NonNull private final String userId;
-	private Optional<String> trackerId;
+    private CountDownLatch completionLatch;
 }

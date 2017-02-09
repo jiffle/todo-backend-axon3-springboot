@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import todo.domain.TodoItem;
-import todo.helper.NotFoundException;
+import todo.exception.NotFoundException;
 import todo.web.TodoController;
 
 @Component

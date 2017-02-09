@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import todo.domain.TodoListAggregate;
-import todo.helper.NotFoundException;
+import todo.exception.NotFoundException;
 import todo.middleware.CompletionTracker;
 
 /** Repository of Todo lists 

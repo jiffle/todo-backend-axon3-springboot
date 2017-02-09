@@ -24,24 +24,24 @@ public class TodoItemCommandHandler {
 	@CommandHandler
 	public void create( CreateTodoItemCommand cmd) {
 		TodoListAggregate todoListAggregate = repository.loadOrCreateInstance( cmd.getUserId());
-		todoListAggregate.addItem( cmd.getItemId(), cmd.getTitle(), cmd.isCompleted(), cmd.getOrder(), cmd.getTrackerId());
+		todoListAggregate.addItem( cmd.getItemId(), cmd.getTitle(), cmd.isCompleted(), cmd.getOrder(), cmd.getCompletionLatch());
 	}
 	
 	@CommandHandler
 	public void update( UpdateTodoItemCommand cmd) {
 		TodoListAggregate todoListAggregate = repository.loadOrCreateInstance( cmd.getUserId());
-		todoListAggregate.updateItem( cmd.getItemId(), ofNullable( cmd.getTitle()), ofNullable( cmd.getCompleted()), ofNullable( cmd.getOrder()), cmd.getTrackerId());
+		todoListAggregate.updateItem( cmd.getItemId(), ofNullable( cmd.getTitle()), ofNullable( cmd.getCompleted()), ofNullable( cmd.getOrder()), cmd.getCompletionLatch());
 	}
 	
 	@CommandHandler
 	public void delete( DeleteTodoItemCommand cmd) {
 		TodoListAggregate todoListAggregate = repository.loadOrCreateInstance( cmd.getUserId());
-		todoListAggregate.deleteItem( cmd.getItemId(), cmd.getTrackerId());	    	
+		todoListAggregate.deleteItem( cmd.getItemId(), cmd.getCompletionLatch());
 	}
 	
 	@CommandHandler
 	public void clear( ClearTodoListCommand cmd) {
 		TodoListAggregate todoListAggregate = repository.loadOrCreateInstance( cmd.getUserId());
-		todoListAggregate.clear( cmd.getTrackerId());	    	
+		todoListAggregate.clear( cmd.getCompletionLatch());
 	}
 }

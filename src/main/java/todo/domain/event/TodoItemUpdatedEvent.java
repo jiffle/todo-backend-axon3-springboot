@@ -1,6 +1,7 @@
 package todo.domain.event;
 
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 
 import lombok.NonNull;
 import lombok.Value;
@@ -14,5 +15,5 @@ public class TodoItemUpdatedEvent {
 	private Optional<String> title;
 	private Optional<Boolean> completed;
 	private Optional<Integer> order;
-	private Optional<String> trackerId;
+	@NonNull private Optional<CountDownLatch> completionLatch;
 }

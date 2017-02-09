@@ -2,6 +2,7 @@ package todo.domain.command;
 
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 
 import org.axonframework.commandhandling.TargetAggregateIdentifier;
 
@@ -17,5 +18,5 @@ public class CreateTodoItemCommand {
 	@NonNull private String title;
 	private boolean completed;
 	@NonNull private Integer order;
-	private Optional<String> trackerId;
+	private CountDownLatch completionLatch;
 }
