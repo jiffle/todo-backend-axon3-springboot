@@ -47,12 +47,13 @@ public class TodoListAggregate {
 		this.tracker = tracker;
 	}
 
-	public void addItem(String itemId, String title, boolean completed, Integer order, CountDownLatch completionLatch) {
+	public void addItem(String itemId, String title, Boolean completed, Integer order, CountDownLatch completionLatch) {
 		TodoItem existing = todos.get( itemId);
 		if( existing != null) {
 			throw new ConflictException();
 		}
-		apply( new TodoItemCreatedEvent( itemId, title, completed, order, of(completionLatch)));
+		boolean isCompleted = completed != null ? completed.booleanValue() : false;
+		apply( new TodoItemCreatedEvent( itemId, title, isCompleted, order, of(completionLatch)));
 	}
 
 	public void updateItem(String itemId, Optional<String> title, Optional<Boolean> completed, Optional<Integer> order, CountDownLatch completionLatch) {
@@ -88,7 +89,7 @@ public class TodoListAggregate {
 		TodoItem item = TodoItem.builder()
 				.id( event.getItemId())
 				.title( event.getTitle())
-				.completed( event.getCompleted())
+				.completed( event.isCompleted())
 				.order( event.getOrder())
 				.build();
 		todos.put( event.getItemId(), item);

@@ -24,7 +24,7 @@ public class TodoItemCommandHandler {
 	@CommandHandler
 	public void create( CreateTodoItemCommand cmd) {
 		TodoListAggregate todoListAggregate = repository.loadOrCreateInstance( cmd.getUserId());
-		todoListAggregate.addItem( cmd.getItemId(), cmd.getTitle(), cmd.isCompleted(), cmd.getOrder(), cmd.getCompletionLatch());
+		todoListAggregate.addItem( cmd.getItemId(), cmd.getTitle(), cmd.getCompleted(), cmd.getOrder(), cmd.getCompletionLatch());
 	}
 	
 	@CommandHandler

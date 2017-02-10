@@ -12,7 +12,7 @@ import lombok.Value;
 public class TodoItemCreatedEvent {
 	@NonNull private final String itemId;
 	@NonNull private String title;
-	@NonNull private Boolean completed;
-	@NonNull private Integer order;
+	private boolean completed;
+	private Integer order;
 	@NonNull private Optional<CountDownLatch> completionLatch;
 }

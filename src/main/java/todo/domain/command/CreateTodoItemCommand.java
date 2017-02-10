@@ -16,7 +16,7 @@ public class CreateTodoItemCommand {
     @NonNull private final String userId;
     @NonNull private final String itemId;
 	@NonNull private String title;
-	private boolean completed;
-	@NonNull private Integer order;
+	private Boolean completed;
+	private Integer order;
 	private CountDownLatch completionLatch;
 }

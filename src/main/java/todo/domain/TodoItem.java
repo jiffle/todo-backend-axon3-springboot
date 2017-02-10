@@ -10,6 +10,6 @@ public class TodoItem {
 	@NonNull private String id;
 	@NonNull private String title;
 	private boolean completed;
-	@NonNull private Integer order;
+	private Integer order;
 	
 }

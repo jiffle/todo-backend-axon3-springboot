@@ -46,7 +46,7 @@ public class TodoController {
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<TodoItemView> create(@RequestBody @Valid TodoItemView todo) throws Throwable {
         String itemId = UUID.randomUUID().toString();
-        TodoItem item = facadeService.createItem( USER_ID, itemId, todo.getTitle(), false, todo.getOrder());
+        TodoItem item = facadeService.createItem( USER_ID, itemId, todo.getTitle(), todo.getCompleted(), todo.getOrder());
         TodoItemView result = viewFactory.buildItem( item);
         return new ResponseEntity<>( result, HttpStatus.CREATED);
     }

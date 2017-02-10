@@ -16,7 +16,7 @@ public class TodoItemView {
 	private String id;
 @NotNull private String title;
 	private Boolean completed;
-@NotNull private Integer order;
+	private Integer order;
 	private String url;
 	
     /*    @JsonCreator

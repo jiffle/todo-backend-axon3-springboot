@@ -46,7 +46,7 @@ public class TodoFacadeService {
         return queryService.queryListForItem(userId, itemId);
     }
 
-    public TodoItem createItem( String userId, String itemId, String title, boolean completed, Integer order) throws BaseWebException {
+    public TodoItem createItem( String userId, String itemId, String title, Boolean completed, Integer order) throws BaseWebException {
         CountDownLatch latch = latchFactory.createInstance();
         try {
             commandGateway.sendAndWait( new CreateTodoItemCommand( userId, itemId, title, completed, order, latch),
