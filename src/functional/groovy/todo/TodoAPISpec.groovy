@@ -225,7 +225,7 @@ class TodoAPISpec extends Specification {
         newList.data.size == 3
 //      weird - should work, but doesn't
 //        that( newList.data*.id, not( hasItem( itemId)))
-//      worksaround
+//      workaround
         that( newList.data*.id, containsInAnyOrder( checkIds.toArray()))
     }
 

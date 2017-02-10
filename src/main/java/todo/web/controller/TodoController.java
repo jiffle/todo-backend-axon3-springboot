@@ -1,4 +1,4 @@
-package todo.web;
+package todo.web.controller;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import todo.domain.TodoItem;
 import todo.facade.TodoFacadeService;
-import todo.view.TodoItemView;
-import todo.view.TodoItemViewFactory;
+import todo.web.view.TodoItemView;
+import todo.web.view.TodoItemViewFactory;
 
 import javax.validation.Valid;
 import java.util.Collection;

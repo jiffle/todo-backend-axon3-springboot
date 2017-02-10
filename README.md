@@ -10,8 +10,6 @@ Written as a prototype (mostly without unit tests), it has complete functional t
 
 Things still To Do (ironically!):
 
-* Refactor controller code into a Façade Service
-* Replace CompletableFuture with either a simpler semaphore approach, or an event dispatched back to the controller/façade 
 * Integrate with Axon Test Framework, as the repository implementation is incompatible with the default Axon fixtures
 * Retrofit unit tests
 

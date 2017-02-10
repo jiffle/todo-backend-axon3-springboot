@@ -1,4 +1,4 @@
-package todo.view;
+package todo.web.view;
 
 import java.util.Collection;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import todo.domain.TodoItem;
 import todo.exception.NotFoundException;
-import todo.web.TodoController;
+import todo.web.controller.TodoController;
 
 @Component
 public class TodoItemViewFactory {

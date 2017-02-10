@@ -1,4 +1,4 @@
-package todo.view;
+package todo.web.view;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
