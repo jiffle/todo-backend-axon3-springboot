@@ -21,7 +21,6 @@ import todo.domain.event.TodoListClearedEvent;
 import todo.domain.event.TodoItemUpdatedEvent;
 import todo.exception.ConflictException;
 import todo.exception.NotFoundException;
-import todo.middleware.CompletionTracker;
 
 /** Aggregate root for the TodoList (singleton per session)
  */
@@ -31,7 +30,6 @@ import todo.middleware.CompletionTracker;
 public class TodoListAggregate {
 	@AggregateIdentifier
 	private String id;
-	private CompletionTracker tracker;
 
 	private Map<String, TodoItem> todos;
 	
@@ -43,10 +41,6 @@ public class TodoListAggregate {
 		this.id = id;
 	}
 	
-	public void setTracker( CompletionTracker tracker) {
-		this.tracker = tracker;
-	}
-
 	public void addItem(String itemId, String title, Boolean completed, Integer order, CountDownLatch completionLatch) {
 		TodoItem existing = todos.get( itemId);
 		if( existing != null) {

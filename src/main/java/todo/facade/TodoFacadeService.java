@@ -13,14 +13,10 @@ import todo.domain.command.UpdateTodoItemCommand;
 import todo.exception.BaseWebException;
 import todo.exception.InternalServerErrorException;
 import todo.helper.CompletionLatchFactory;
-import todo.middleware.CompletionTracker;
 import todo.query.TodoQueryService;
 
 import java.util.Collection;
-import java.util.UUID;
 import java.util.concurrent.*;
-
-import static java.util.Optional.of;
 
 /** Provides a service to abstract the complexities away from the controller class, and a facade pattern onto the backend services
  */

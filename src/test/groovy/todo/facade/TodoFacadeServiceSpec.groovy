@@ -10,10 +10,9 @@ import todo.domain.command.UpdateTodoItemCommand
 import todo.exception.InternalServerErrorException
 import todo.exception.NotFoundException
 import todo.helper.CompletionLatchFactory
-import todo.middleware.CompletionTracker
+
 import todo.query.TodoQueryService
 
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
 
 class TodoFacadeServiceSpec extends Specification {

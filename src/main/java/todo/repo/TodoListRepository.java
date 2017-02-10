@@ -15,20 +15,17 @@ import org.springframework.stereotype.Component;
 
 import todo.domain.TodoListAggregate;
 import todo.exception.NotFoundException;
-import todo.middleware.CompletionTracker;
 
 /** Repository of Todo lists 
  */
 @Component
 public class TodoListRepository {
-private final CompletionTracker tracker;
 private final AggregateModel<TodoListAggregate> aggregateModel;
 private final EventBus eventBus;
 
 @Autowired
-public TodoListRepository(CompletionTracker tracker, EventBus eventBus) {
+public TodoListRepository( EventBus eventBus) {
 	super();
-	this.tracker = tracker;
 	this.eventBus = eventBus;
     this.aggregateModel = ModelInspector.inspectAggregate( TodoListAggregate.class);	
     
@@ -48,7 +45,6 @@ private Map<String, TodoListAggregate> todoLists = new HashMap<>();
 	public TodoListAggregate createInstance( String aggregateId) {
 		TodoListAggregate result = new TodoListAggregate();
 		result.setId( aggregateId);
-		result.setTracker( tracker);
 		AnnotatedAggregate.initialize( result, aggregateModel, eventBus);
 		todoLists.put( aggregateId, result);
         return result;
