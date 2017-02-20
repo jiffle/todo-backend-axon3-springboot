@@ -11,6 +11,7 @@ buildscript {
 
 plugins {
     id 'org.springframework.boot' version '1.5.1.RELEASE'
+	id "org.sonarqube" version "2.2"
 }
 
 apply plugin: 'java'
@@ -38,8 +39,8 @@ ext {
 } 
 
 repositories {
-  jcenter()      
-  mavenCentral()
+    mavenCentral()
+	jcenter()
 }
 
 sourceSets {
