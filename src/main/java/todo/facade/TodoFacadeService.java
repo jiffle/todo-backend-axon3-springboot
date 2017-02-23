@@ -23,6 +23,9 @@ import java.util.concurrent.*;
 @Slf4j
 @Service
 public class TodoFacadeService {
+    public static final String GOT_COMMAND_EXECUTION_EXCEPTION_WITH_UNEXPECTED_UNDERLYING_CAUSE = "Got CommandExecutionException with unexpected underlying cause";
+    public static final String INTERRUPTED_WAITING_FOR_RESPONSE_TO_COMPLETE = "Interrupted waiting for response to complete";
+    public static final String TIMEOUT_WAITING_FOR_ACTION_TO_BE_PROCESSED = "Timeout waiting for action to be processed";
     private final TodoQueryService queryService;
     private final CommandGateway commandGateway;
     private CompletionLatchFactory latchFactory;
@@ -42,11 +45,12 @@ public class TodoFacadeService {
         return queryService.queryListForItem(userId, itemId);
     }
 
-    public TodoItem createItem( String userId, String itemId, String title, Boolean completed, Integer order) throws BaseWebException {
+    public TodoItem createItem( String userId, String itemId, String title, Boolean completed, Integer order) {
         CountDownLatch latch = latchFactory.createInstance();
         try {
             commandGateway.sendAndWait( new CreateTodoItemCommand( userId, itemId, title, completed, order, latch),
                     1, TimeUnit.SECONDS);
+            Thread.sleep( 100);
             if( latch.await( 1, TimeUnit.SECONDS)) {
                 return getItem( userId, itemId);
             }
@@ -54,14 +58,15 @@ public class TodoFacadeService {
             if( e.getCause() instanceof BaseWebException) {
                 throw (BaseWebException) e.getCause();
             }
-            log.error( "Got CommandExecutionException with unexpected underlying cause", e);
+            log.error(GOT_COMMAND_EXECUTION_EXCEPTION_WITH_UNEXPECTED_UNDERLYING_CAUSE, e);
         } catch (InterruptedException e) {
-            log.error( "Interrupted waiting for response to complete");
+            log.error(INTERRUPTED_WAITING_FOR_RESPONSE_TO_COMPLETE);
+            Thread.currentThread().interrupt();
         }
-        throw new InternalServerErrorException( "Timeout waiting for action to be processed");
+        throw new InternalServerErrorException(TIMEOUT_WAITING_FOR_ACTION_TO_BE_PROCESSED);
     }
 
-    public TodoItem updateItem( String userId, String itemId, String title, Boolean completed, Integer order) throws BaseWebException {
+    public TodoItem updateItem( String userId, String itemId, String title, Boolean completed, Integer order) {
         CountDownLatch latch = latchFactory.createInstance();
         try {
             commandGateway.sendAndWait( new UpdateTodoItemCommand( userId, itemId, title, completed, order, latch),
@@ -73,14 +78,15 @@ public class TodoFacadeService {
             if( e.getCause() instanceof BaseWebException) {
                 throw (BaseWebException) e.getCause();
             }
-            log.error( "Got CommandExecutionException with unexpected underlying cause", e);
+            log.error(GOT_COMMAND_EXECUTION_EXCEPTION_WITH_UNEXPECTED_UNDERLYING_CAUSE, e);
         } catch (InterruptedException e) {
-            log.error( "Interrupted waiting for response to complete");
+            log.error(INTERRUPTED_WAITING_FOR_RESPONSE_TO_COMPLETE);
+            Thread.currentThread().interrupt();
         }
-        throw new InternalServerErrorException( "Timeout waiting for action to be processed");
+        throw new InternalServerErrorException(TIMEOUT_WAITING_FOR_ACTION_TO_BE_PROCESSED);
     }
 
-    public TodoItem deleteItem( String userId, String itemId) throws BaseWebException {
+    public TodoItem deleteItem( String userId, String itemId) {
         CountDownLatch latch = latchFactory.createInstance();
         try {
             commandGateway.sendAndWait( new DeleteTodoItemCommand( userId, itemId, latch),
@@ -92,11 +98,12 @@ public class TodoFacadeService {
             if( e.getCause() instanceof BaseWebException) {
                 throw (BaseWebException) e.getCause();
             }
-            log.error( "Got CommandExecutionException with unexpected underlying cause", e);
+            log.error(GOT_COMMAND_EXECUTION_EXCEPTION_WITH_UNEXPECTED_UNDERLYING_CAUSE, e);
         } catch (InterruptedException e) {
-            log.error( "Interrupted waiting for response to complete");
+            log.error(INTERRUPTED_WAITING_FOR_RESPONSE_TO_COMPLETE);
+            Thread.currentThread().interrupt();
         }
-        throw new InternalServerErrorException( "Timeout waiting for action to be processed");
+        throw new InternalServerErrorException(TIMEOUT_WAITING_FOR_ACTION_TO_BE_PROCESSED);
     }
 
     public Collection<TodoItem> deleteList(String userId) {
@@ -107,9 +114,10 @@ public class TodoFacadeService {
                 return getList( userId);
             }
         } catch (InterruptedException e) {
-            log.error( "Interrupted waiting for response to complete");
+            log.error(INTERRUPTED_WAITING_FOR_RESPONSE_TO_COMPLETE);
+            Thread.currentThread().interrupt();
         }
-        throw new InternalServerErrorException( "Timeout waiting for action to be processed");
+        throw new InternalServerErrorException(TIMEOUT_WAITING_FOR_ACTION_TO_BE_PROCESSED);
     }
 
 }

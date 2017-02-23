@@ -1,13 +1,11 @@
 package todo.query.impl;
 
-import java.util.Collection;
-import java.util.Optional;
-
 import org.springframework.stereotype.Service;
-
 import todo.domain.TodoItem;
 import todo.query.TodoQueryService;
 import todo.repo.TodoListRepository;
+
+import java.util.Collection;
 
 @Service
 public class TodoQueryServiceImpl implements TodoQueryService {

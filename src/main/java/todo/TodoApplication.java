@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class TodoApplication {
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         SpringApplication.run(TodoApplication.class, args);
     }
     

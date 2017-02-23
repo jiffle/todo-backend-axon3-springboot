@@ -1,12 +1,10 @@
 package todo.domain.command;
 
-import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-
-import org.axonframework.commandhandling.TargetAggregateIdentifier;
-
 import lombok.NonNull;
 import lombok.Value;
+import org.axonframework.commandhandling.TargetAggregateIdentifier;
+
+import java.util.concurrent.CountDownLatch;
 
 @Value
 public class DeleteTodoItemCommand {

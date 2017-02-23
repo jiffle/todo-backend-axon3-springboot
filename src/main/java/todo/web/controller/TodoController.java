@@ -33,18 +33,20 @@ public class TodoController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public @ResponseBody List<TodoItemView> index() {
+    @ResponseBody
+    public List<TodoItemView> index() {
 
         return viewFactory.buildList( facadeService.getList( USER_ID));
     }
 
     @RequestMapping(value = TODO_URL, method = RequestMethod.GET)
-    public @ResponseBody TodoItemView show(@PathVariable String id) {
+    @ResponseBody
+    public TodoItemView show(@PathVariable String id) {
         return viewFactory.buildItem( facadeService.getItem( USER_ID, id));
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<TodoItemView> create(@RequestBody @Valid TodoItemView todo) throws Throwable {
+    public ResponseEntity<TodoItemView> create(@RequestBody @Valid TodoItemView todo) {
         String itemId = UUID.randomUUID().toString();
         TodoItem item = facadeService.createItem( USER_ID, itemId, todo.getTitle(), todo.getCompleted(), todo.getOrder());
         TodoItemView result = viewFactory.buildItem( item);
@@ -52,19 +54,21 @@ public class TodoController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE)
-    public @ResponseBody Collection<TodoItemView> clear() {
+    @ResponseBody
+    public Collection<TodoItemView> clear() {
         Collection<TodoItem> items = facadeService.deleteList( USER_ID);
         return viewFactory.buildList( items);
     }
 
     @RequestMapping(value = TODO_URL, method = RequestMethod.PATCH)
-    public @ResponseBody TodoItemView update(@PathVariable String id, @RequestBody TodoItemView todo) throws Throwable {
+    @ResponseBody
+    public TodoItemView update(@PathVariable String id, @RequestBody TodoItemView todo) {
         TodoItem item = facadeService.updateItem(USER_ID, id, todo.getTitle(), todo.getCompleted(), todo.getOrder());
         return viewFactory.buildItem( item);
     }
 
     @RequestMapping(value = TODO_URL, method = RequestMethod.DELETE)
-    public ResponseEntity<String> delete(@PathVariable String id) throws Throwable {
+    public ResponseEntity<String> delete(@PathVariable String id) {
         facadeService.deleteItem( USER_ID, id);
         return new ResponseEntity<>( "{}", HttpStatus.OK);
     }
