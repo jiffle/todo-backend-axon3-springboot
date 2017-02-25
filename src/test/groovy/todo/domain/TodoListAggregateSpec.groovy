@@ -1,19 +1,47 @@
 package todo.domain
 
+import org.axonframework.commandhandling.model.AggregateLifecycle
+import org.axonframework.commandhandling.model.inspection.AnnotatedAggregate
+import org.axonframework.commandhandling.model.inspection.ModelInspector
+import org.axonframework.eventhandling.EventBus
 import spock.lang.*
 import org.axonframework.test.aggregate.AggregateTestFixture
 import todo.domain.command.*
 import todo.domain.event.*
+import todo.helper.CompletionLatchFactory
+
+import java.util.concurrent.CountDownLatch
 
 import static java.util.Optional.of
 
 class TodoListAggregateSpec extends Specification {
-    def fixture
-    def todo
+    TodoListAggregate aggregate
+    TodoItem expectTodo
+    def lifecycleSpy
+    def aggregateModel
+    EventBus eventBus
+    CountDownLatch latch
+    def expectId = "abc123"
+    def expectTitle = "do something"
+    def expectCompleted = false
+    def expectOrder = 2
 
     def setup() {
-        fixture = new AggregateTestFixture(TodoListAggregate.class)
-        todo = TodoItem.builder().id("abc123").title("do something").order( 2).build();
+        expectTodo = TodoItem.builder().id("abc123").title("do something").order( 2).build();
+        lifecycleSpy = GroovySpy( AggregateLifecycle.class, global: true)
+        eventBus = Mock()
+        latch = Mock()
+        aggregate = new TodoListAggregate()
+        aggregateModel = ModelInspector.inspectAggregate( TodoListAggregate.class)
+        AnnotatedAggregate.initialize( aggregate, aggregateModel, eventBus)
+    }
+
+    @Requires({ env['test.newtests'] })
+    def "Add Item should succeed an invoke event generation"() {
+        when:
+            aggregate.addItem( expectId, expectTitle, expectCompleted, expectOrder, latch)
+        then:
+            1 * lifecycleSpy.apply( _)
     }
 
     @Requires({ env['test.broken'] })

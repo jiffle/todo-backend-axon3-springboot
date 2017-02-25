@@ -1,26 +1,23 @@
 package todo.domain;
 
-import static java.util.Optional.of;
-import static org.axonframework.commandhandling.model.AggregateLifecycle.apply;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.model.AggregateIdentifier;
 import org.axonframework.commandhandling.model.AggregateRoot;
 import org.axonframework.eventhandling.EventHandler;
-
-import lombok.extern.slf4j.Slf4j;
 import todo.domain.event.TodoItemCreatedEvent;
 import todo.domain.event.TodoItemDeletedEvent;
-import todo.domain.event.TodoListClearedEvent;
 import todo.domain.event.TodoItemUpdatedEvent;
+import todo.domain.event.TodoListClearedEvent;
 import todo.exception.ConflictException;
 import todo.exception.NotFoundException;
+
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+
+import static java.util.Optional.of;
+import static org.axonframework.commandhandling.model.AggregateLifecycle.apply;
 
 /** Aggregate root for the TodoList (singleton per session)
  */
@@ -29,18 +26,14 @@ import todo.exception.NotFoundException;
 @AggregateRoot
 public class TodoListAggregate {
 	@AggregateIdentifier
-	private String id;
+	@Getter @Setter private String id;
 
 	private Map<String, TodoItem> todos;
 	
 	public TodoListAggregate() {
-		todos = new HashMap<>();
+		todos = Collections.synchronizedMap( new HashMap<>());
 	}
-	
-	public void setId( String id) {
-		this.id = id;
-	}
-	
+
 	public void addItem(String itemId, String title, Boolean completed, Integer order, CountDownLatch completionLatch) {
 		TodoItem existing = todos.get( itemId);
 		if( existing != null) {
@@ -75,7 +68,7 @@ public class TodoListAggregate {
 	}
 	
 	public TodoItem getValue(String itemId) {
-		return todos.get( itemId);
+        return todos.get( itemId);
 	}
 	
 	@EventHandler

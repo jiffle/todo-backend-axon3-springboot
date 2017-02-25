@@ -3,59 +3,45 @@
  */
 package todo.repo;
 
-import org.axonframework.commandhandling.model.inspection.AggregateModel;
-import org.axonframework.commandhandling.model.inspection.AnnotatedAggregate;
-import org.axonframework.commandhandling.model.inspection.ModelInspector;
-import org.axonframework.eventhandling.EventBus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import todo.domain.TodoListAggregate;
 import todo.exception.NotFoundException;
+import todo.helper.AggregateInitialiser;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
+
 /** Repository of To-do lists
  */
+@Slf4j
 @Component
 public class TodoListRepository {
-private final AggregateModel<TodoListAggregate> aggregateModel;
-private final EventBus eventBus;
 
-private Map<String, TodoListAggregate> todoLists = new HashMap<>();
+private Map<String, TodoListAggregate> todoLists = Collections.synchronizedMap(new HashMap<>());
+private AggregateInitialiser aggregateInitialiser;
 
-@Autowired
-public TodoListRepository( EventBus eventBus) {
-	super();
-	this.eventBus = eventBus;
-    this.aggregateModel = ModelInspector.inspectAggregate( TodoListAggregate.class);
-
+    @Autowired
+public TodoListRepository( AggregateInitialiser aggregateInitialiser) {
+	this.aggregateInitialiser = aggregateInitialiser;
     }
 
-	private TodoListAggregate loadInternal(String aggregateId) {
-		return todoLists.get( aggregateId);
-/*
-		if( result != null) {
-		//	AnnotatedAggregate.initialize( result, aggregateModel, eventBus);
-		}
-		return Optional.ofNullable( result);
-*/
+	private Optional<TodoListAggregate> loadInternal(String aggregateId) {
+        return ofNullable( todoLists.get( aggregateId));
 	}
 
-	public TodoListAggregate load( String aggregateId) {
-		TodoListAggregate result = loadInternal( aggregateId);
-/*
-		return result.map( x -> initInstance( x)).
-				orElseThrow( () -> new NotFoundException("No todo list found for user"));
-*/
-    if( result == null) {
-        throw new NotFoundException("No todo list found for user");
-        }
-        return initInstance( result);
+	public TodoListAggregate loadInstance(String aggregateId) {
+        return loadInternal( aggregateId)
+                .map( x -> aggregateInitialiser.initInstance( x))
+                .orElseThrow( () -> new NotFoundException ("No todo list found for user"));
 	}
 
-	private TodoListAggregate createInstance( String aggregateId) {
+	private TodoListAggregate createInternal(String aggregateId) {
 		TodoListAggregate result = new TodoListAggregate();
 		result.setId( aggregateId);
 		todoLists.put( aggregateId, result);
@@ -63,17 +49,18 @@ public TodoListRepository( EventBus eventBus) {
 	}
 
 	public TodoListAggregate loadOrCreateInstance( String aggregateId) {
-        TodoListAggregate result = loadInternal(aggregateId);
-        if( result == null) {
-            result = createInstance(aggregateId);
-        }
-        return initInstance( result);
+        return aggregateInitialiser.initInstance(
+                loadInternal(aggregateId)
+                        .orElseGet(() -> createInternal(aggregateId)));
     }
 
-    private TodoListAggregate initInstance( TodoListAggregate item) {
-        if( item != null) {
-            AnnotatedAggregate.initialize(item, aggregateModel, eventBus);
-        }
-        return item;
+    // test method
+    protected int getTodoListSize() {
+    return todoLists.size();
     }
+    // test method
+    protected TodoListAggregate getTodoInstance( String id) {
+        return todoLists.get( id);
+    }
+
 }

@@ -20,7 +20,7 @@ private final TodoListRepository repository;
 	}
 
 	@Override public TodoItem queryListForItem(String userId, String itemId) {
-		return repository.load( userId).getValue( itemId);
+		return repository.loadInstance( userId).getValue( itemId);
 	}
 
 	

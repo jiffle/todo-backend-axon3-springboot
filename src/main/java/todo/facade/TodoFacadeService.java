@@ -50,7 +50,6 @@ public class TodoFacadeService {
         try {
             commandGateway.sendAndWait( new CreateTodoItemCommand( userId, itemId, title, completed, order, latch),
                     1, TimeUnit.SECONDS);
-            Thread.sleep( 100);
             if( latch.await( 1, TimeUnit.SECONDS)) {
                 return getItem( userId, itemId);
             }
