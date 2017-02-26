@@ -9,7 +9,9 @@ import java.io.IOException;
 @Component
 public class CORSFilter implements Filter {
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {}
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // no custom initialisation required
+    }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -23,5 +25,7 @@ public class CORSFilter implements Filter {
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        // no custom cleanup required
+    }
 }

@@ -37,7 +37,7 @@ public TodoListRepository( AggregateInitialiser aggregateInitialiser) {
 
 	public TodoListAggregate loadInstance(String aggregateId) {
         return loadInternal( aggregateId)
-                .map( x -> aggregateInitialiser.initInstance( x))
+                .map( aggregateInitialiser::initInstance)
                 .orElseThrow( () -> new NotFoundException ("No todo list found for user"));
 	}
 

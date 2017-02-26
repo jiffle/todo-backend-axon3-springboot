@@ -47,62 +47,17 @@ public class TodoFacadeService {
 
     public TodoItem createItem( String userId, String itemId, String title, Boolean completed, Integer order) {
         CountDownLatch latch = latchFactory.createInstance();
-        try {
-            commandGateway.sendAndWait( new CreateTodoItemCommand( userId, itemId, title, completed, order, latch),
-                    1, TimeUnit.SECONDS);
-            if( latch.await( 1, TimeUnit.SECONDS)) {
-                return getItem( userId, itemId);
-            }
-        } catch (CommandExecutionException e) {
-            if( e.getCause() instanceof BaseWebException) {
-                throw (BaseWebException) e.getCause();
-            }
-            log.error(GOT_COMMAND_EXECUTION_EXCEPTION_WITH_UNEXPECTED_UNDERLYING_CAUSE, e);
-        } catch (InterruptedException e) {
-            log.error(INTERRUPTED_WAITING_FOR_RESPONSE_TO_COMPLETE);
-            Thread.currentThread().interrupt();
-        }
-        throw new InternalServerErrorException(TIMEOUT_WAITING_FOR_ACTION_TO_BE_PROCESSED);
+        return sendCommandAndGetItem(userId, itemId, new CreateTodoItemCommand( userId, itemId, title, completed, order, latch), latch);
     }
 
     public TodoItem updateItem( String userId, String itemId, String title, Boolean completed, Integer order) {
         CountDownLatch latch = latchFactory.createInstance();
-        try {
-            commandGateway.sendAndWait( new UpdateTodoItemCommand( userId, itemId, title, completed, order, latch),
-                    1, TimeUnit.SECONDS);
-            if( latch.await( 1, TimeUnit.SECONDS)) {
-                return getItem( userId, itemId);
-            }
-        } catch (CommandExecutionException e) {
-            if( e.getCause() instanceof BaseWebException) {
-                throw (BaseWebException) e.getCause();
-            }
-            log.error(GOT_COMMAND_EXECUTION_EXCEPTION_WITH_UNEXPECTED_UNDERLYING_CAUSE, e);
-        } catch (InterruptedException e) {
-            log.error(INTERRUPTED_WAITING_FOR_RESPONSE_TO_COMPLETE);
-            Thread.currentThread().interrupt();
-        }
-        throw new InternalServerErrorException(TIMEOUT_WAITING_FOR_ACTION_TO_BE_PROCESSED);
+        return sendCommandAndGetItem(userId, itemId, new UpdateTodoItemCommand( userId, itemId, title, completed, order, latch), latch);
     }
 
     public TodoItem deleteItem( String userId, String itemId) {
         CountDownLatch latch = latchFactory.createInstance();
-        try {
-            commandGateway.sendAndWait( new DeleteTodoItemCommand( userId, itemId, latch),
-                    1, TimeUnit.SECONDS);
-            if( latch.await( 1, TimeUnit.SECONDS)) {
-                return getItem( userId, itemId);
-            }
-        } catch (CommandExecutionException e) {
-            if( e.getCause() instanceof BaseWebException) {
-                throw (BaseWebException) e.getCause();
-            }
-            log.error(GOT_COMMAND_EXECUTION_EXCEPTION_WITH_UNEXPECTED_UNDERLYING_CAUSE, e);
-        } catch (InterruptedException e) {
-            log.error(INTERRUPTED_WAITING_FOR_RESPONSE_TO_COMPLETE);
-            Thread.currentThread().interrupt();
-        }
-        throw new InternalServerErrorException(TIMEOUT_WAITING_FOR_ACTION_TO_BE_PROCESSED);
+        return sendCommandAndGetItem(userId, itemId, new DeleteTodoItemCommand( userId, itemId, latch), latch);
     }
 
     public Collection<TodoItem> deleteList(String userId) {
@@ -112,6 +67,25 @@ public class TodoFacadeService {
             if( latch.await( 1, TimeUnit.SECONDS)) {
                 return getList( userId);
             }
+        } catch (InterruptedException e) {
+            log.error(INTERRUPTED_WAITING_FOR_RESPONSE_TO_COMPLETE);
+            Thread.currentThread().interrupt();
+        }
+        throw new InternalServerErrorException(TIMEOUT_WAITING_FOR_ACTION_TO_BE_PROCESSED);
+    }
+
+    private TodoItem sendCommandAndGetItem(String userId, String itemId, Object command, CountDownLatch latch) {
+        try {
+            commandGateway.sendAndWait( command,
+                    1, TimeUnit.SECONDS);
+            if( latch.await( 1, TimeUnit.SECONDS)) {
+                return getItem( userId, itemId);
+            }
+        } catch (CommandExecutionException e) {
+            if( e.getCause() instanceof BaseWebException) {
+                throw (BaseWebException) e.getCause();
+            }
+            log.error(GOT_COMMAND_EXECUTION_EXCEPTION_WITH_UNEXPECTED_UNDERLYING_CAUSE, e);
         } catch (InterruptedException e) {
             log.error(INTERRUPTED_WAITING_FOR_RESPONSE_TO_COMPLETE);
             Thread.currentThread().interrupt();

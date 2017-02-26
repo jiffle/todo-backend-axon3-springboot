@@ -19,16 +19,6 @@ public class TodoItemView {
 	private Integer order;
 	private String url;
 	
-    /*    @JsonCreator
-    public TodoItem(@JsonProperty("title") String title,
-                    @JsonProperty("completed") boolean completed,
-                    @JsonProperty("order") Integer order) {
-        this.title = title;
-        this.completed = completed;
-        this.order = order;
-    }
-*/        
-
 	public static class Builder {
 		public Builder todoItem( TodoItem item) {
 			this.id = item.getId();

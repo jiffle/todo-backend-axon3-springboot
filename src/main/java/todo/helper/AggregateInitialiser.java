@@ -8,9 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import todo.domain.TodoListAggregate;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Service
 public class AggregateInitialiser {
     private final AggregateModel<TodoListAggregate> aggregateModel;
