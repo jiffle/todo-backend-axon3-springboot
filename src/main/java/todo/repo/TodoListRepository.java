@@ -42,7 +42,7 @@ public TodoListRepository( AggregateInitialiser aggregateInitialiser) {
 	}
 
 	private TodoListAggregate createInternal(String aggregateId) {
-		TodoListAggregate result = new TodoListAggregate();
+		TodoListAggregate result = TodoListAggregate.createTodoListAggregate( null);
 		result.setId( aggregateId);
 		todoLists.put( aggregateId, result);
         return result;

@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.model.AggregateIdentifier;
+import org.axonframework.commandhandling.model.AggregateLifecycle;
 import org.axonframework.commandhandling.model.AggregateRoot;
+import org.axonframework.commandhandling.model.ApplyMore;
 import org.axonframework.eventhandling.EventHandler;
 import todo.domain.event.TodoItemCreatedEvent;
 import todo.domain.event.TodoItemDeletedEvent;
@@ -17,7 +19,6 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 import static java.util.Optional.of;
-import static org.axonframework.commandhandling.model.AggregateLifecycle.apply;
 
 /** Aggregate root for the TodoList (singleton per session)
  */
@@ -27,10 +28,12 @@ import static org.axonframework.commandhandling.model.AggregateLifecycle.apply;
 public class TodoListAggregate {
 	@AggregateIdentifier
 	@Getter @Setter private String id;
+	private final Lifecycle lifecycle;
 
 	private Map<String, TodoItem> todos;
 	
-	public TodoListAggregate() {
+	private TodoListAggregate( Lifecycle lifecycle) {
+		this.lifecycle = lifecycle;
 		todos = Collections.synchronizedMap( new HashMap<>());
 	}
 
@@ -40,7 +43,7 @@ public class TodoListAggregate {
 			throw new ConflictException();
 		}
 		boolean isCompleted = completed != null ? completed.booleanValue() : false;
-		apply( new TodoItemCreatedEvent( itemId, title, isCompleted, order, of(completionLatch)));
+		lifecycle.apply( new TodoItemCreatedEvent( itemId, title, isCompleted, order, of(completionLatch)));
 	}
 
 	public void updateItem(String itemId, Optional<String> title, Optional<Boolean> completed, Optional<Integer> order, CountDownLatch completionLatch) {
@@ -48,7 +51,7 @@ public class TodoListAggregate {
 		if( existing == null) {
 			throw new NotFoundException();
 		}
-		apply( new TodoItemUpdatedEvent( itemId, title, completed, order, of(completionLatch)));
+		lifecycle.apply( new TodoItemUpdatedEvent( itemId, title, completed, order, of(completionLatch)));
 	}
 
 	public void deleteItem(String itemId, CountDownLatch completionLatch) {
@@ -56,11 +59,11 @@ public class TodoListAggregate {
 		if( existing == null) {
 			throw new NotFoundException();
 		}
-		apply( new TodoItemDeletedEvent( itemId, of(completionLatch)));
+		lifecycle.apply( new TodoItemDeletedEvent( itemId, of(completionLatch)));
 	}
 	
 	public void clear( CountDownLatch completionLatch) {
-		apply( new TodoListClearedEvent( of(completionLatch)));
+		lifecycle.apply( new TodoListClearedEvent( of(completionLatch)));
 	}
 	
 	public Collection<TodoItem> allValues() {
@@ -114,5 +117,22 @@ public class TodoListAggregate {
 
 		event.getCompletionLatch().ifPresent( CountDownLatch::countDown);
     }
+
+	public static TodoListAggregate createTodoListAggregate( final Lifecycle lifecycle) {
+        Lifecycle realLifecycle = lifecycle == null ? new DefaultLifecycle() : lifecycle;
+		return new TodoListAggregate( realLifecycle);
+	}
+
+	@FunctionalInterface
+	public interface Lifecycle {
+		ApplyMore apply(Object event);
+	}
+
+	public static class DefaultLifecycle implements Lifecycle {
+	    @Override
+		public ApplyMore apply(Object event) {
+			return AggregateLifecycle.apply( event);
+		}
+	}
 
 }

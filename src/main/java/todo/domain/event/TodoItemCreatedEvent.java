@@ -1,11 +1,11 @@
 package todo.domain.event;
 
-import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+
+import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 
 @Value
 @RequiredArgsConstructor
