@@ -10,7 +10,7 @@ buildscript {
 }
 
 plugins {
-    id 'org.springframework.boot' version '1.5.1.RELEASE'
+    id 'org.springframework.boot' version '1.5.13.RELEASE'
 	id "org.sonarqube" version "2.2"
 }
 
@@ -34,9 +34,9 @@ tasks.withType(JavaCompile) {
 }
 
 ext {
-  axonVersion = '3.0.1'
+  axonVersion = '3.2.1'
   springbootVersion = '1.5.1.RELEASE'
-  spockVersion = '1.1-groovy-2.4-rc-3'
+  spockVersion = '1.1-groovy-2.4'
 } 
 
 repositories {
@@ -110,9 +110,10 @@ dependencies {
 	compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
 	compile 'org.hibernate:hibernate-validator:5.4.0.Final'
 
-	testCompile "org.codehaus.groovy:groovy-all:2.4.8"
+	testCompile "org.codehaus.groovy:groovy-all:2.4.15"
 	testCompile "org.springframework.boot:spring-boot-starter-test:${springbootVersion}"
-    testCompile "org.spockframework:spock-core:${spockVersion}"
+	testCompile "com.athaydes:spock-reports:1.5.0"
+	testCompile "org.spockframework:spock-core:${spockVersion}"
 	testCompile "org.spockframework:spock-spring:${spockVersion}"
 	testCompile "cglib:cglib-nodep:3.2.4"
     testCompile "junit:junit:4.12"
